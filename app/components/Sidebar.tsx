@@ -1,0 +1,154 @@
+'use client'
+
+import { Button } from "@nextui-org/react"
+import { Plus, Menu, X, History, Mic2, Crown, CreditCard, Projector, FolderOpenDot } from 'lucide-react'
+import { useState } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+
+export default function Sidebar() {
+    const [isOpen, setIsOpen] = useState(false)
+    const pathname = usePathname()
+
+    const menuItems = [
+        {
+            group: "Menu",
+            items: [
+                { icon: <History className="w-4 h-4" />, label: "Lịch sử", href: "/history", isPro: false },
+                { icon: <Mic2 className="w-4 h-4" />, label: "AIVoice API", href: "/api-endpoint", isPro: false },
+                { icon: <CreditCard className="w-4 h-4" />, label: "Thanh toán", href: "/payment/history", isPro: false },
+            ]
+        }
+    ]
+
+    const handleNewProject = () => {
+        // Clear all input data
+        // Redirect to text-to-speech page
+        window.location.href = '/text-to-speech';
+    }
+
+    return (
+        <>
+            {/* Mobile Menu Button */}
+            <Button
+                isIconOnly
+                variant="light"
+                className="lg:hidden fixed top-4 right-4 z-50"
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </Button>
+
+            {/* Sidebar */}
+            <div className={`
+        fixed top-0 lg:static 
+        w-[280px] lg:w-60
+        h-screen 
+        transition-all duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        border-r bg-white/50 backdrop-blur-xl
+        z-40
+        overflow-y-auto
+        scrollbar-hide
+      `}>
+                {/* New Project Button */}
+                <div className="p-4">
+                    <Button
+                        startContent={<FolderOpenDot className="w-4 h-4" />}
+                        color="primary"
+                        className="w-full font-medium shadow-lg hover:shadow-primary/25 transition-shadow"
+                        size="lg"
+                        onClick={handleNewProject}
+                    >
+                        Dự án của tôi
+                    </Button>
+                </div>
+
+                {/* Menu Items */}
+                <div className="px-3 py-2">
+                    {menuItems.map((group, idx) => (
+                        <div key={idx} className="mb-6">
+                            <p className="text-xs font-semibold text-default-500 px-3 mb-2 uppercase tracking-wider">
+                                {group.group}
+                            </p>
+                            {group.items.map((item, itemIdx) => (
+                                <Link href={item.href} key={itemIdx}>
+                                    <Button
+                                        startContent={item.icon}
+                                        variant="light"
+                                        className={`w-full justify-start font-normal mb-1 h-12
+                      ${item.isPro ? 'bg-gradient-to-r from-primary/10 to-warning/10 text-warning' : ''}
+                      ${pathname === item.href ? 'bg-primary/10 text-primary' : ''}
+                    `}
+                                        endContent={item.isPro &&
+                                            <span className="text-[10px] font-semibold bg-warning/20 text-warning px-2 py-0.5 rounded-full">
+                                                PRO
+                                            </span>
+                                        }
+                                    >
+                                        {item.label}
+                                    </Button>
+                                </Link>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Pro Card */}
+                <div className="px-4 mb-2">
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-warning/10">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Crown className="w-4 h-4 text-warning" />
+                            <p className="text-base font-semibold text-warning">Nâng cấp VIP</p>
+                        </div>
+                        <p className="text-xs text-default-600 mb-3">
+                            Nâng cấp tài khoản để có thêm nhiều tính năng hơn
+                        </p>
+                        <Link href="/pricing">
+                            <Button
+                                className="w-full bg-warning text-white font-medium h-9 text-sm"
+                            >
+                                Mua gói cước
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Usage Card - Compact version */}
+                <div className="px-4 mb-4">
+                    <div className="p-3 rounded-lg bg-default-50">
+                        <div className="flex items-center justify-between mb-2">
+                            <p className="text-xs text-default-600">Số lượt còn lại:</p>
+                            <p className="text-sm font-medium">1,234 / 5,000</p>
+                        </div>
+                        <div className="w-full h-1 bg-default-200 rounded-full overflow-hidden">
+                            <div 
+                                className="h-full bg-primary rounded-full transition-all duration-300" 
+                                style={{ width: `${(1234 / 5000) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Section */}
+                <div className="absolute bottom-0 lg:bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent">
+                    <div className="flex items-center gap-3 p-4 rounded-xl bg-default-100">
+                        <div className="w-10 h-10 rounded-full bg-default-200" /> {/* Avatar placeholder */}
+                        <div>
+                            <p className="text-sm font-medium">Tên người dùng</p>
+                            <p className="text-xs text-default-500">user@example.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-black/20 backdrop-blur-sm lg:hidden z-30"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
+        </>
+    )
+} 

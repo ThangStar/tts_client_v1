@@ -2,14 +2,19 @@
 
 import { Button, Card, CardBody } from "@nextui-org/react"
 import { ArrowRight, Mic2, Headphones, CheckCircle, Play, Heart, Sparkles, Video } from 'lucide-react'
-import Image from "next/image"
 import Navbar from "@/components/Navbar"
 import { useState, useCallback } from 'react'
 import LoginDialog from '@/components/LoginDialog'
 import RegisterDialog from '@/components/RegisterDialog'
 import { useDispatch } from "react-redux"
-import authenticateSlice, { AuthenticateAction } from "./redux/slices/auth.slice"
+import { AuthenticateAction } from "./redux/slices/auth.slice"
 import { auth_register_params_dto } from "./api/auth.api"
+import Lottie from "lottie-react"
+import s1Animation from '../public/animationes/s1.json'
+import s2Animation from '../public/animationes/s2.json'
+import s3Animation from '../public/animationes/s3.json'
+import s4Animation from '../public/animationes/s4.json'
+import Image from "next/image"
 export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
@@ -51,7 +56,7 @@ export default function HomePage() {
       // setShowRegisterDialog(false)
       // setShowLoginDialog(true) // Show login after successful registration
       console.log(params);
-      
+
       dispatch(authAction.register(params))
     } catch (error) {
       console.error('Registration failed:', error)
@@ -108,7 +113,7 @@ export default function HomePage() {
                   <>
                     <div
                       onClick={() => setIsPlaying(true)}
-                      className="absolute inset-0 cursor-pointer bg-black/10 hover:bg-black/20 transition-colors duration-300"
+                      className="absolute inset-0 cursor-pointer bg-black/10 hover:bg-black/20 transition-colors duration-300 rounded-xl"
                     />
 
                     <button
@@ -148,13 +153,9 @@ export default function HomePage() {
               </p>
             </div>
             <div className="relative">
-              <Image
-                src="/images/s1.png"
-                alt="AI Voice Interface"
-                width={1200}
-                height={675}
-                className="rounded-xl shadow-xl mx-auto"
-              />
+              <div className="flex items-center">
+                <Image src="/images/s1.png" alt="AI Voice Interface" width={1200} height={675} className="rounded-xl shadow-xl mx-auto" />
+              </div>
               {/* Optional: Add gradient overlay at the bottom */}
               <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent" />
             </div>
@@ -227,7 +228,7 @@ export default function HomePage() {
                   <div className="rounded-full bg-primary/10 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                     <Video className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Đa dạng ứng dụng</h3>
+                  <h3 className="text-xl font-semibold mb-2">a dạng ứng dụng</h3>
                   <p className="text-default-500">
                     Dễ dàng tạo video quảng cáo, review phim, broadcast, video giảng dạy sinh động
                   </p>
@@ -245,12 +246,9 @@ export default function HomePage() {
             {/* Đa dạng giọng nói */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
               <div className="flex items-center">
-                <Image
-                  src="/images/s1.png"
-                  alt="Đa dạng giọng nói"
-                  width={500}
-                  height={400}
-                  className="rounded-lg shadow-lg"
+                <Lottie
+                  animationData={s1Animation}
+                  className="w-[500px] h-[400px]"
                 />
               </div>
               <div className="flex flex-col justify-center">
@@ -277,7 +275,7 @@ export default function HomePage() {
 
             {/* Cảm xúc chân thật */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
-              <div className="flex flex-col justify-center md:order-2">
+              <div className="flex flex-col justify-center order-2 md:order-1">
                 <h3 className="text-2xl font-bold mb-4">Cảm xúc chân thật</h3>
                 <p className="text-lg text-gray-600 mb-6">
                   Giọng đọc thể hiện cảm xúc tự nhiên, mang đến trải nghiệm chân thực cho người nghe.
@@ -297,13 +295,10 @@ export default function HomePage() {
                   </li>
                 </ul>
               </div>
-              <div className="flex items-center md:order-1">
-                <Image
-                  src="/features/emotions.png"
-                  alt="Cảm xúc chân thật"
-                  width={500}
-                  height={400}
-                  className="rounded-lg shadow-lg"
+              <div className="flex items-center order-1 md:order-2">
+                <Lottie
+                  animationData={s2Animation}
+                  className="w-[500px] h-[400px]"
                 />
               </div>
             </div>
@@ -311,12 +306,9 @@ export default function HomePage() {
             {/* Chất lượng giọng nói */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
               <div className="flex items-center">
-                <Image
-                  src="/features/voice-quality.png"
-                  alt="Chất lượng giọng nói"
-                  width={500}
-                  height={400}
-                  className="rounded-lg shadow-lg"
+                <Lottie
+                  animationData={s4Animation}
+                  className="w-[500px] h-[400px]"
                 />
               </div>
               <div className="flex flex-col justify-center">
@@ -331,7 +323,7 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-6 h-6 text-primary mr-2" />
-                    Giọng nói mượt mà, không bị ngắt quãng
+                    Giọng nói mượt mà, không bị ngắt quang
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-6 h-6 text-primary mr-2" />
@@ -343,7 +335,7 @@ export default function HomePage() {
 
             {/* Đa dạng ứng dụng */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="flex flex-col justify-center md:order-2">
+              <div className="flex flex-col justify-center order-2 md:order-1">
                 <h3 className="text-2xl font-bold mb-4">Đa dạng ứng dụng</h3>
                 <p className="text-lg text-gray-600 mb-6">
                   Dễ dàng tạo nội dung đa phương tiện với nhiều mục đích sử dụng khác nhau.
@@ -355,7 +347,7 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-6 h-6 text-primary mr-2" />
-                    Sản xu��t video review sản phẩm
+                    Sản xuất video review sản phẩm
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-6 h-6 text-primary mr-2" />
@@ -367,13 +359,10 @@ export default function HomePage() {
                   </li>
                 </ul>
               </div>
-              <div className="flex items-center md:order-1">
-                <Image
-                  src="/features/applications.png"
-                  alt="Đa dạng ứng dụng"
-                  width={500}
-                  height={400}
-                  className="rounded-lg shadow-lg"
+              <div className="flex items-center order-1 md:order-2">
+                <Lottie
+                  animationData={s3Animation}
+                  className="w-[500px] h-[400px]"
                 />
               </div>
             </div>

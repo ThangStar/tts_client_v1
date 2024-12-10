@@ -2,9 +2,6 @@
 
 import { Modal, ModalContent, ModalHeader, ModalBody, Button, Input } from "@nextui-org/react"
 import { Mail, Lock } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useState } from "react"
 import { useForm } from "react-hook-form"
 
 type LoginInput = {
@@ -18,7 +15,7 @@ export default function LoginDialog({ isOpen, onClose, onLogin, onSwitchToRegist
   onSwitchToRegister: () => void
 }) {
 
-  const { register, handleSubmit, formState: { errors }, getValues } = useForm<LoginInput>()
+  const { register, handleSubmit, formState: { errors }} = useForm<LoginInput>()
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl">
       <ModalContent>

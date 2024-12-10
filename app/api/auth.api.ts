@@ -12,6 +12,7 @@ export type auth_register_params_dto = {
 }
 
 export const AuthApi = {
-    login: async (params: auth_login_params_dto) => (await http.post("/auth/login", params)).data,
-    register: async (params: auth_register_params_dto) => (await http.post("/auth/register", params)).data
+    login: async (params: auth_login_params_dto) => (await http.post("/auth/login", params)).data.data,
+    register: async (params: auth_register_params_dto) => (await http.post("/auth/register", params)).data,
+    profile: async () => (await http.get("/auth/profile")).data.data
 }

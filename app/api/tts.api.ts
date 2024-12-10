@@ -1,23 +1,31 @@
 import http from "../http/http"
+import { Actor,} from "../types/actor.type"
 export type tts_params_dto = {
     prompt: string,
     language: string,
     voice_type: string,
 }
 
-export type voice_history_params_dto = {
-    search: string,
-    limit: string,
-    page: string,
+export interface voice_list_params_dto {
+    search?: string,
+    limit: number,
+    page: number,
+    category_code?: string,
+    language_code?: string,
+    type?: number,
+    gender?: number,
+}
+export type voice_list_response_dto = {
+    items: Actor[],
+    meta: {
+        limit: number,
+        page: number,
+        total: number,
+        totalPages: number,
+    },
 }
 
 export const TTSApi = {
-    tts: async (params: tts_params_dto) => {
-        return (await http.post("/tts", params)).data
-    },
-    history: async (params: voice_history_params_dto) => {
-        return (await http.get("/tts/history", {
-            params: params
-        })).data
-    }
+    tts: async (params: tts_params_dto) => (await http.post("/tts", params)).data,
+    voices: async (params: voice_list_params_dto) => (await http.get("/tts/voices", { params: params })).data.data as voice_list_response_dto,
 }

@@ -16,8 +16,9 @@ const plans = [
       { text: "Lượt tải xuống 1 lần / ngày", enabled: true },
       { text: "Số thiết bị đồng thời 1 thiết bị", enabled: true },
     ],
-    buttonText: "Kích hoạt",
+    buttonText: "Mặc định",
     popular: false,
+    isDefault: true,
   },
   {
     name: "Tiêu chuẩn",
@@ -73,6 +74,7 @@ export default function PricingPage() {
   const router = useRouter();
 
   const handleSelectPlan = (plan: any) => {
+    if (plan.isDefault) return;
     router.push(`/payment?period=${plan.period}&type=${plan.type}`);
   };
 
@@ -113,9 +115,12 @@ export default function PricingPage() {
                 className={`mt-6 w-full font-medium ${
                   plan.popular
                     ? 'bg-primary text-white shadow-lg hover:shadow-primary/25'
-                    : 'bg-default-100 hover:bg-primary/10'
+                    : plan.isDefault 
+                      ? 'bg-default-200 cursor-not-allowed opacity-50' 
+                      : 'bg-default-100 hover:bg-primary/10'
                 } transition-all duration-300`}
                 onClick={() => handleSelectPlan(plan)}
+                isDisabled={plan.isDefault}
               >
                 {plan.buttonText}
               </Button>

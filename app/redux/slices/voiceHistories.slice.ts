@@ -1,4 +1,4 @@
-import { tts_params_dto, TTSApi } from "@/app/api/tts.api";
+import { tts_params_dto, TTSApi} from "@/app/api/tts.api";
 import { Voice } from "@/app/types/voice.type";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 type tts_response = {
@@ -14,6 +14,7 @@ const action = {
             return thunkAPI.rejectWithValue(error)
         }
     }),
+    
 }
 
 export type VoiceState = {
@@ -21,256 +22,7 @@ export type VoiceState = {
 }
 
 export const initialData: VoiceState = {
-    voiceHistories: [
-        {
-            progress: false,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },{
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-        {
-            progress: true,
-            voice: {
-                content: "Hello, how can I assist you today?",
-                idRepo: '123',
-            }
-        },
-    ]
+    voiceHistories: [],
 }
 
 export const voiceHistorySlice = createSlice({
@@ -285,25 +37,25 @@ export const voiceHistorySlice = createSlice({
             console.log(action.payload)
             state.value.voiceHistories.push(action.payload)
         })
-        .addCase(action.tts.pending, (state, action) => {
-            state.value.voiceHistories.push({
-                progress: true,
-                voice: {
-                    content: "Hello, how can I assist you today?",
-                    idRepo: '123',
-                }
+            .addCase(action.tts.pending, (state, action) => {
+                state.value.voiceHistories.push({
+                    progress: true,
+                    voice: {
+                        content: "Hello, how can I assist you today?",
+                        idRepo: '123',
+                    }
+                })
             })
-        })
-        .addCase(action.tts.rejected, (state, action) => {
-            console.log(action.payload)
-            state.value.voiceHistories.push({
-                progress: false,
-                voice: {
-                    content: "Hello, how can I assist you today?",
-                    idRepo: '123',
-                }
+            .addCase(action.tts.rejected, (state, action) => {
+                console.log(action.payload)
+                state.value.voiceHistories.push({
+                    progress: false,
+                    voice: {
+                        content: "Hello, how can I assist you today?",
+                        idRepo: '123',
+                    }
+                })
             })
-        })
     },
 })
 export const VoiceHistoryAction = {

@@ -1,14 +1,25 @@
 'use client'
 
 import { Button } from "@nextui-org/react"
-import { Plus, Menu, X, History, Mic2, Crown, CreditCard, Projector, FolderOpenDot } from 'lucide-react'
-import { useState } from "react"
+import { Menu, X, History, Mic2, Crown, CreditCard, FolderOpenDot } from 'lucide-react'
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useDispatch, useSelector } from "react-redux"
+import { AuthenticateAction, AuthenticateState } from "../redux/slices/auth.slice"
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false)
     const pathname = usePathname()
+    const dispatch = useDispatch<any>()
+    useEffect(() => {
+        dispatch(AuthenticateAction.profile())
+    }, [dispatch])
+
+    const { user }: AuthenticateState = useSelector((state: any) => {
+        console.log("state", state)
+        return state.authenticate.value.user
+    })
 
     const menuItems = [
         {
@@ -122,8 +133,8 @@ export default function Sidebar() {
                             <p className="text-sm font-medium">1,234 / 5,000</p>
                         </div>
                         <div className="w-full h-1 bg-default-200 rounded-full overflow-hidden">
-                            <div 
-                                className="h-full bg-primary rounded-full transition-all duration-300" 
+                            <div
+                                className="h-full bg-primary rounded-full transition-all duration-300"
                                 style={{ width: `${(1234 / 5000) * 100}%` }}
                             />
                         </div>
@@ -135,8 +146,8 @@ export default function Sidebar() {
                     <div className="flex items-center gap-3 p-4 rounded-xl bg-default-100">
                         <div className="w-10 h-10 rounded-full bg-default-200" /> {/* Avatar placeholder */}
                         <div>
-                            <p className="text-sm font-medium">Tên người dùng</p>
-                            <p className="text-xs text-default-500">user@example.com</p>
+                            <p className="text-sm font-medium">{user?.display_name || "Tên người dùng"}</p>
+                            <p className="text-xs text-default-500">{user?.email || "user@example.com"}</p>
                         </div>
                     </div>
                 </div>

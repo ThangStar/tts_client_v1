@@ -1,11 +1,17 @@
 export type User = {
-    id: number,
-    displayName?: string,
     email?: string,
-    token?: string,
-    role?: string,
-    status?: number,
+    display_name?: string,
+    is_premium?: boolean,
     createdAt?: string,
-    updatedAt?: string,
-    password?: string,
+    subscriptions?: [
+        {
+            status: string,
+            startDate: string,
+            endDate: string,
+            plan: {
+                name: string,
+                description: string
+            }
+        }
+    ]
 }

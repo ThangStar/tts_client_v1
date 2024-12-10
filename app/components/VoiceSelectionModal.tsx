@@ -16,6 +16,7 @@ import {
   Chip
 } from "@nextui-org/react"
 import { Search, PlayCircle, Settings } from 'lucide-react'
+import { useDispatch } from "react-redux"
 
 // Định nghĩa types
 type Voice = {
@@ -53,6 +54,8 @@ export default function VoiceSelectionModal({
     language: ""
   })
 
+  const dispatch = useDispatch<any>()
+
   // Mock data cho voices
   const voices: Voice[] = [
     {
@@ -61,7 +64,7 @@ export default function VoiceSelectionModal({
       avatar: "https://i.pravatar.cc/150?img=44",
       type: "Tổng đài",
       gender: "female",
-      language: "vi-VN",
+      language: "vi",
       quality: "premium",
       category: "business"
     },
@@ -71,7 +74,7 @@ export default function VoiceSelectionModal({
       avatar: "https://i.pravatar.cc/150?img=68",
       type: "Đọc truyện",
       gender: "male",
-      language: "vi-VN",
+      language: "vi",
       quality: "standard",
       category: "story"
     },
@@ -81,7 +84,7 @@ export default function VoiceSelectionModal({
       avatar: "https://i.pravatar.cc/150?img=45",
       type: "Podcast",
       gender: "female",
-      language: "vi-VN",
+      language: "vi",
       quality: "premium",
       category: "podcast"
     },

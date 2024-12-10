@@ -47,7 +47,7 @@ export default function Navbar() {
                             <Image src="/images/vi-flag.png" alt="Vietnamese" width={20} height={20} />
                             <span>VI</span>
                         </div>
-                        <Button variant="light">Đăng nhập</Button>
+                        <Button variant="light" className="hidden md:block">Đăng nhập</Button>
                         <Button color="warning">Dùng thử miễn phí</Button>
                     </div>
                 </div>

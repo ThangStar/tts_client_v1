@@ -1,6 +1,6 @@
 export type User = {
     id: number,
-    display_name?: string,
+    displayName?: string,
     email?: string,
     token?: string,
     role?: string,

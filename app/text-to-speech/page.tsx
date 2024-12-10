@@ -7,31 +7,27 @@ import {
   Input,
   Card,
   CardBody,
-  Radio,
-  RadioGroup,
   Textarea,
   useDisclosure,
   Checkbox,
 } from "@nextui-org/react"
-import { Search, Volume2, Clock, ChevronDown, BookOpen, Film, Newspaper, Info } from 'lucide-react'
+import { Search, Clock, ChevronDown } from 'lucide-react'
 import React, { useState } from "react"
 import VoiceSelectionModal from '../components/VoiceSelectionModal'
 import { useDispatch, useSelector } from "react-redux"
 import VoiceHistoryList from "../components/VoiceHistoryList"
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice"
 import toast from "react-hot-toast"
-import { useForm } from "react-hook-form"
 
 export default function Page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedVoiceType, setSelectedVoiceType] = React.useState("podcast");
   const [selectedVoice, setSelectedVoice] = useState({
     id: "1",
     name: "HN - Ngọc Huyền",
     avatar: "https://i.pravatar.cc/150?img=44",
     type: "Tổng đài",
     gender: "female",
-    language: "vi-VN",
+    language: "vi",
     quality: "premium",
   });
 
@@ -45,16 +41,8 @@ export default function Page() {
   const dispatch = useDispatch<any>();
   const { tts } = VoiceHistoryAction
   const [text, setText] = useState("")
-  const [isTouched, setIsTouched] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
-  const validateText = (value: string) => value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
-
-  const isInvalid = React.useMemo(() => {
-    if (text === "") return false;
-
-    return validateText(text) ? false : true;
-  }, [text]);
 
   const handleTTS = (e: any) => {
     e.preventDefault();
@@ -64,9 +52,14 @@ export default function Page() {
       return
     }
     toast.success("Đã thêm vào danh sách yêu cầu...")
-    // dispatch(tts({
-    //   prompt: text,
-    // }))
+    const params = {
+      prompt: text,
+      language: selectedVoice.language,
+      voice_type: selectedVoice.type,
+    }
+    console.log(params);
+    
+    dispatch(tts(params))
   }
 
   const handleValidateText = (value: string): string | null => {

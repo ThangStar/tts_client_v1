@@ -285,6 +285,25 @@ export const voiceHistorySlice = createSlice({
             console.log(action.payload)
             state.value.voiceHistories.push(action.payload)
         })
+        .addCase(action.tts.pending, (state, action) => {
+            state.value.voiceHistories.push({
+                progress: true,
+                voice: {
+                    content: "Hello, how can I assist you today?",
+                    idRepo: '123',
+                }
+            })
+        })
+        .addCase(action.tts.rejected, (state, action) => {
+            console.log(action.payload)
+            state.value.voiceHistories.push({
+                progress: false,
+                voice: {
+                    content: "Hello, how can I assist you today?",
+                    idRepo: '123',
+                }
+            })
+        })
     },
 })
 export const VoiceHistoryAction = {

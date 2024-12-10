@@ -8,7 +8,6 @@ function AppProvider({ children }: { children: React.ReactNode }) {
     return (
         <Provider store={store}>
             <Toaster />
-
             {children}
         </Provider>
     )

@@ -1,19 +1,15 @@
-"use client";
 import axios, {
   AxiosError,
   HttpStatusCode,
   type AxiosInstance,
 } from "axios";
-// import { cookies } from "next/headers";
-// import getLocalStorage from "@/hooks/getLocalStorage";
-// import moment from 'moment'
 class Http {
   instance: AxiosInstance;
   private accessToken: string | undefined | null;
   private status: number | undefined;
   constructor() {
     if (typeof window !== "undefined") {
-      this.accessToken = this.getCookie("jwt"); // Retrieve jwt from cookies
+      this.accessToken = this.getCookie("jwt_voice"); // Retrieve jwt from cookies
     }
     this.instance = axios.create({
       baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -36,17 +32,18 @@ class Http {
     );
     this.instance.interceptors.response.use(
       (response) => {
-        if (response?.data?.token) {
-          this.accessToken = response.data.token;
-          document.cookie = `jwt=${response.data.token};path=/;`;
+        console.log("response", response.data.data)
+        if (response?.data?.data?.token) {
+          this.accessToken = response.data.data.token;
+          document.cookie = `jwt_voice=${response.data.data.token};path=/;`;
         }
 
         return response;
       },
       async (error: AxiosError) => {
         if (HttpStatusCode.Unauthorized == (error.response?.status as number)) {
-          localStorage.removeItem("jwt");
-          window.location.href = "/error";
+          localStorage.removeItem("jwt_voice");
+          window.location.href = "/";
         }
         if (
           ![

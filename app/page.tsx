@@ -8,7 +8,8 @@ import { useState, useCallback } from 'react'
 import LoginDialog from '@/components/LoginDialog'
 import RegisterDialog from '@/components/RegisterDialog'
 import { useDispatch } from "react-redux"
-import authenticateSlice, { AuthenticateAction } from "./redux/slices/authenticate.slice"
+import authenticateSlice, { AuthenticateAction } from "./redux/slices/auth.slice"
+import { auth_register_params_dto } from "./api/auth.api"
 export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
@@ -44,11 +45,14 @@ export default function HomePage() {
     }
   }, [])
 
-  const handleRegister = useCallback(async (email: string, password: string) => {
+  const handleRegister = useCallback(async (params: auth_register_params_dto) => {
     try {
       // Implement register logic here
-      setShowRegisterDialog(false)
-      setShowLoginDialog(true) // Show login after successful registration
+      // setShowRegisterDialog(false)
+      // setShowLoginDialog(true) // Show login after successful registration
+      console.log(params);
+      
+      dispatch(authAction.register(params))
     } catch (error) {
       console.error('Registration failed:', error)
     }
@@ -92,7 +96,7 @@ export default function HomePage() {
               <div className="relative group">
                 <video
                   src="/videos/intro.mp4"
-                  poster="/images/intro-thumbnail.png"
+                  poster="/images/intro-thumbnail.jpg"
                   className="w-full rounded-xl shadow-xl"
                   width={600}
                   height={400}
@@ -351,7 +355,7 @@ export default function HomePage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-6 h-6 text-primary mr-2" />
-                    Sản xuất video review sản phẩm
+                    Sản xu��t video review sản phẩm
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-6 h-6 text-primary mr-2" />

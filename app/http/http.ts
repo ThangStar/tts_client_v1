@@ -32,7 +32,6 @@ class Http {
     );
     this.instance.interceptors.response.use(
       (response) => {
-        console.log("response", response.data.data)
         if (response?.data?.data?.token) {
           this.accessToken = response.data.data.token;
           document.cookie = `jwt_voice=${response.data.data.token};path=/;`;

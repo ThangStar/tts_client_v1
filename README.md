@@ -94,7 +94,3 @@ Chúng tôi luôn chào đón mọi đóng góp! Vui lòng đọc [CONTRIBUTING.
 - Email: support@aivoice.com
 - Website: https://aivoice.com
 - Discord: [AIVoice Community](https://discord.gg/aivoice)
-
-## ⭐ Stargazers
-
-[![Stargazers](https://reporoster.com/stars/your-username/aivoice)](https://github.com/your-username/aivoice/stargazers)

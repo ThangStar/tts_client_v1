@@ -6,6 +6,7 @@ export type Actor = {
     description: string,
     avatar: string,
     is_premium: boolean,
+    sample_audio: string,
     language: {
         id: number,
         name: string,

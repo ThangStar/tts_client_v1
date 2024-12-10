@@ -4,19 +4,28 @@ import { Button } from "@nextui-org/react"
 import { AudioWaveform } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useState, useCallback } from 'react'
+import { usePathname, useRouter } from "next/navigation"
+import { useState, useCallback, useEffect } from 'react'
 import LoginDialog from '@/components/LoginDialog'
 import RegisterDialog from '@/components/RegisterDialog'
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { AuthenticateAction } from "@/app/redux/slices/auth.slice"
 import { auth_register_params_dto } from "@/app/api/auth.api"
+import { RootState } from "@/app/redux/store"
 
 export default function Navbar() {
+    const router = useRouter()
     const pathname = usePathname()
+    const { redirectTo } = useSelector((state: RootState) => state.authenticate)
     const [showLoginDialog, setShowLoginDialog] = useState(false)
     const [showRegisterDialog, setShowRegisterDialog] = useState(false)
     const dispatch = useDispatch<any>()
+
+    useEffect(() => {
+        if (redirectTo) {
+            router.push(redirectTo)
+        }
+    }, [redirectTo, router])
 
     const handleTryFreeClick = useCallback(() => {
         const token = localStorage.getItem('token_aivoice')
@@ -24,8 +33,8 @@ export default function Navbar() {
             setShowLoginDialog(true)
             return
         }
-        window.location.href = '/text-to-speech'
-    }, [])
+        router.push('/text-to-speech')
+    }, [router])
 
     const switchToRegister = useCallback(() => {
         setShowLoginDialog(false)
@@ -58,7 +67,7 @@ export default function Navbar() {
             <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 shadow-sm">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
-                        <Link href="/" className="flex items-center gap-2">
+                        <Link href="/text-to-speech" prefetch className="flex items-center gap-2">
                             <AudioWaveform width={32} height={32} className="text-primary"/>
                             <span className="font-bold text-primary">AIVoice</span>
                         </Link>

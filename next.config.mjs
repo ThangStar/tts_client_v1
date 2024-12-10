@@ -3,7 +3,7 @@ const nextConfig = {
     // basePath: "/tts-client",
     // output: "export",
     images: {
-        domains: ['api.vietqr.io']
+        domains: ['api.vietqr.io', 'i.pravatar.cc']
     },
     webpack: (config) => {
         config.resolve.fallback = {

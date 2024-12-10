@@ -1,5 +1,4 @@
 import { TTSApi, voice_list_params_dto, voice_list_response_dto } from "@/app/api/tts.api";
-import { Actor } from "@/app/types/actor.type";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 const action = {
     listActor: createAsyncThunk('actor/listActor', async (actor: voice_list_params_dto, thunkAPI) => {
@@ -37,7 +36,7 @@ export const actorSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(action.listActor.fulfilled, (state, action) => {
-            console.log("ACTORES22222", action.payload)
+            console.log("ACTORES", action.payload);
             state.value.actors = action.payload
         })
             .addCase(action.listActor.rejected, (state, action) => {

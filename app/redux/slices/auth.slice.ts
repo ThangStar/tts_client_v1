@@ -31,11 +31,11 @@ const action = {
 }
 
 export type AuthenticateState = {
-    user: User,
+    user: User | undefined,
 }
 
 export const initialData: AuthenticateState = {
-    user: {},
+    user: undefined,
 }
 
 export const authenticateSlice = createSlice({
@@ -54,7 +54,6 @@ export const authenticateSlice = createSlice({
             toast.success('Đăng nhập thành công')
             state.value.user = action.payload.user
             state.redirectTo = '/text-to-speech'
-            localStorage.setItem('token', action.payload.token)
         })
         .addCase(action.login.rejected, (state, action: any) => {
             console.log("rejected", action.payload.response.data);
@@ -78,7 +77,12 @@ export const authenticateSlice = createSlice({
             }
         })
         .addCase(action.profile.fulfilled, (state, action) => {
+            console.log("profile", action.payload)
             state.value.user = action.payload
+            state.redirectTo = '/text-to-speech'
+        })
+        .addCase(action.profile.rejected, (state, action: any) => {
+            console.log("rejected", action.payload.response.data);
         })
     },
 })

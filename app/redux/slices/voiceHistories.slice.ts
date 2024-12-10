@@ -34,7 +34,7 @@ export const voiceHistorySlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(action.tts.fulfilled, (state, action) => {
-            console.log(action.payload)
+            console.log("VOICE HISTORY", action.payload)
             state.value.voiceHistories.push(action.payload)
         })
             .addCase(action.tts.pending, (state, action) => {

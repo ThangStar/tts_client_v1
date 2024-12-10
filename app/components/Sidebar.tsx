@@ -1,24 +1,21 @@
 'use client'
 
 import { Button } from "@nextui-org/react"
-import { Menu, X, History, Mic2, Crown, CreditCard, FolderOpenDot } from 'lucide-react'
-import { useEffect, useState } from "react"
+import { Menu, X, History, Mic2, Crown, CreditCard, FolderOpenDot, LogOut } from 'lucide-react'
+import { useState, MouseEvent } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useDispatch, useSelector } from "react-redux"
-import { AuthenticateAction, AuthenticateState } from "../redux/slices/auth.slice"
+import { usePathname, useRouter } from "next/navigation"
+import { useSelector } from "react-redux"
+import { AuthenticateState } from "../redux/slices/auth.slice"
+import Image from "next/image"
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false)
     const pathname = usePathname()
-    const dispatch = useDispatch<any>()
-    useEffect(() => {
-        dispatch(AuthenticateAction.profile())
-    }, [dispatch])
+    const router = useRouter()
 
     const { user }: AuthenticateState = useSelector((state: any) => {
-        console.log("state", state)
-        return state.authenticate.value.user
+        return state.authenticate.value
     })
 
     const menuItems = [
@@ -36,6 +33,16 @@ export default function Sidebar() {
         // Clear all input data
         // Redirect to text-to-speech page
         window.location.href = '/text-to-speech';
+    }
+
+    const handleNavigate = (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, href: string) => {
+        e.preventDefault()
+        router.push(href)
+    }
+
+    const handleLogout = () => {
+        document.cookie = "jwt_voice=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        window.location.href = '/';
     }
 
     return (
@@ -83,23 +90,23 @@ export default function Sidebar() {
                                 {group.group}
                             </p>
                             {group.items.map((item, itemIdx) => (
-                                <Link href={item.href} key={itemIdx}>
-                                    <Button
-                                        startContent={item.icon}
-                                        variant="light"
-                                        className={`w-full justify-start font-normal mb-1 h-12
+                                <Button
+                                    key={itemIdx}
+                                    onClick={(e) => handleNavigate(e, item.href)}
+                                    startContent={item.icon}
+                                    variant="light"
+                                    className={`w-full justify-start font-normal mb-1 h-12
                       ${item.isPro ? 'bg-gradient-to-r from-primary/10 to-warning/10 text-warning' : ''}
                       ${pathname === item.href ? 'bg-primary/10 text-primary' : ''}
                     `}
-                                        endContent={item.isPro &&
-                                            <span className="text-[10px] font-semibold bg-warning/20 text-warning px-2 py-0.5 rounded-full">
-                                                PRO
-                                            </span>
-                                        }
-                                    >
-                                        {item.label}
-                                    </Button>
-                                </Link>
+                                    endContent={item.isPro &&
+                                        <span className="text-[10px] font-semibold bg-warning/20 text-warning px-2 py-0.5 rounded-full">
+                                            PRO
+                                        </span>
+                                    }
+                                >
+                                    {item.label}
+                                </Button>
                             ))}
                         </div>
                     ))}
@@ -143,12 +150,28 @@ export default function Sidebar() {
 
                 {/* Bottom Section */}
                 <div className="absolute bottom-0 lg:bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent">
-                    <div className="flex items-center gap-3 p-4 rounded-xl bg-default-100">
-                        <div className="w-10 h-10 rounded-full bg-default-200" /> {/* Avatar placeholder */}
-                        <div>
-                            <p className="text-sm font-medium">{user?.display_name || "Tên người dùng"}</p>
-                            <p className="text-xs text-default-500">{user?.email || "user@example.com"}</p>
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-default-100">
+                        <div className="flex items-center gap-3">
+                            <Image 
+                                src={`/images/avatar_default.jpg`} 
+                                alt="User avatar" 
+                                width={40}
+                                height={40}
+                                className="rounded-full object-cover"
+                            />
+                            <div>
+                                <p className="text-sm font-medium truncate text-ellipsis w-24">{user?.display_name || "Tên người dùng"}</p>
+                                <p className="text-xs text-default-500 truncate text-ellipsis w-24">{user?.email || "user@example.com"}</p>
+                            </div>
                         </div>
+                        <Button
+                            isIconOnly
+                            variant="light"
+                            className="text-default-500 hover:text-danger"
+                            onClick={handleLogout}
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </Button>
                     </div>
                 </div>
             </div>

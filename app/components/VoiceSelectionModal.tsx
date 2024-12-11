@@ -15,7 +15,7 @@ import {
   Pagination,
   Chip
 } from "@nextui-org/react"
-import { Search, PlayCircle, Settings, Filter } from 'lucide-react'
+import { Search, Settings, Filter, Play, Pause } from 'lucide-react'
 import { useDispatch, useSelector } from "react-redux"
 import { ActorAction } from "../redux/slices/actor.slice"
 import { Actor, ActorGender, ActorLanguage, ActorType } from "../types/actor.type"
@@ -34,11 +34,13 @@ type FilterState = {
 export default function VoiceSelectionModal({
   isOpen,
   onClose,
-  onVoiceSelect
+  onVoiceSelect,
+  isTry = false
 }: {
   isOpen: boolean
   onClose: () => void
-  onVoiceSelect: (voice: Actor) => void
+  onVoiceSelect: (voice: Actor) => void,
+  isTry?: boolean
 }) {
   // States
   const [searchQuery, setSearchQuery] = useState("")
@@ -50,6 +52,8 @@ export default function VoiceSelectionModal({
     category_code: ""
   })
   const [showFilters, setShowFilters] = useState(false)
+  const [playingId, setPlayingId] = useState<number | null>(null)
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null)
 
   const dispatch = useDispatch<any>()
   const { actors: { items, meta } }: { actors: voice_list_response_dto } = useSelector((state: any) => state.actor.value)
@@ -111,6 +115,24 @@ export default function VoiceSelectionModal({
     setPage(1)
   }
 
+  const handlePlay = (actor: Actor) => {
+    if (audio) {
+      audio.pause();
+      setAudio(null);
+      setPlayingId(null);
+    }
+
+    if (playingId !== actor.id) {
+      console.log(actor.sample_audio);
+
+      const newAudio = new Audio(`${process.env.NEXT_PUBLIC_API_URL || '' + actor.sample_audio}`);
+      newAudio.play();
+      newAudio.onended = () => setPlayingId(null);
+      setAudio(newAudio);
+      setPlayingId(actor.id || null);
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -121,7 +143,7 @@ export default function VoiceSelectionModal({
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold">Chọn giọng đọc</h2>
+            <h2 className="text-lg font-bold">{!isTry ? 'Chọn giọng đọc' : 'Nghe thử'}</h2>
             <Button
               isIconOnly
               variant="light"
@@ -226,8 +248,19 @@ export default function VoiceSelectionModal({
                           <div className="text-sm text-default-500">{actor.type}</div>
                         </div>
                       </div>
-                      <Button isIconOnly variant="light">
-                        <PlayCircle className="w-5 h-5" />
+                      <Button
+                        isIconOnly
+                        variant="light"
+                        onClick={(e) => {
+                          e.stopPropagation() // Prevent triggering parent onClick
+                          handlePlay(actor)
+                        }}
+                      >
+                        {playingId === actor.id ? (
+                          <Pause className="w-5 h-5" />
+                        ) : (
+                          <Play className="w-5 h-5" />
+                        )}
                       </Button>
                     </div>
                   </div>

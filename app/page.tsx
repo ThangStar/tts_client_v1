@@ -15,10 +15,13 @@ import s2Animation from '../public/animationes/s2.json'
 import s3Animation from '../public/animationes/s3.json'
 import s4Animation from '../public/animationes/s4.json'
 import Image from "next/image"
+import VoiceSelectionModal from "./components/VoiceSelectionModal"
+
 export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [showRegisterDialog, setShowRegisterDialog] = useState(false)
+  const [showVoiceModal, setShowVoiceModal] = useState(false)
 
   const handleActionClick = useCallback(() => {
     const token = localStorage.getItem('token_aivoice')
@@ -48,7 +51,7 @@ export default function HomePage() {
     } catch (error) {
       console.error('Login failed:', error)
     }
-  }, [])
+  }, [authAction, dispatch])
 
   const handleRegister = useCallback(async (params: auth_register_params_dto) => {
     try {
@@ -61,40 +64,63 @@ export default function HomePage() {
     } catch (error) {
       console.error('Registration failed:', error)
     }
-  }, [])
+  }, [authAction, dispatch])
 
   return (
     <>
       <Navbar />
       <div className="min-h-screen pt-16">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-32 lg:py-40">
+        {/* Thêm thông báo khuyến mãi */}
+        <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-b border-yellow-200">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-center gap-2 text-default-600">
+              <Sparkles className="w-5 h-5 text-yellow-600" />
+              <p className="text-sm md:text-base">
+                🎁 <span className="font-semibold">Ưu đãi đặc biệt:</span> Nhận ngay 10 lượt dùng thử miễn phí khi đăng ký tài khoản mới!
+                <Button
+                  className="ml-3 text-sm"
+                  color="warning"
+                  variant="flat"
+                  size="sm"
+                  onClick={() => setShowRegisterDialog(true)}
+                >
+                  Đăng ký ngay
+                </Button>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Hero Section - Cập nhật nội dung */}
+        <div className="bg-gradient-to-br from-primary/5 to-primary/10 py-28 lg:py-36">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="text-left">
                 <h1 className="text-4xl lg:text-5xl font-bold mb-8 text-primary">
-                  Chuyển văn bản thành giọng nói với AI Voice
+                  Biến văn bản thành giọng nói tự nhiên với AI Voice
                 </h1>
                 <p className="text-xl text-default-600 mb-10">
-                  Công nghệ Text-to-Speech tiên tiến giúp tạo ra giọng đọc tự nhiên cho mọi nhu cầu của bạn. Hỗ trợ đa dạng ngôn ngữ và giọng đọc.
+                  Công nghệ AI tiên tiến giúp tạo ra giọng đọc chân thực, tự nhiên như người thật. 
+                  Hỗ trợ đa dạng giọng đọc 3 miền Bắc - Trung - Nam cùng nhiều ngôn ngữ khác.
                 </p>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     size="lg"
                     color="primary"
                     endContent={<ArrowRight />}
-                    className="text-lg px-8 py-6"
+                    className="text-base sm:text-lg px-6 sm:px-8 py-6 w-full sm:w-auto"
                     onClick={handleActionClick}
                   >
-                    Bắt đầu ngay
+                    Dùng thử miễn phí
                   </Button>
                   <Button
                     size="lg"
                     variant="bordered"
                     endContent={<Headphones />}
-                    className="text-lg px-8 py-6"
+                    className="text-base sm:text-lg px-6 sm:px-8 py-6 w-full sm:w-auto"
+                    onClick={() => setShowVoiceModal(true)}
                   >
-                    Nghe thử
+                    Nghe thử giọng đọc
                   </Button>
                 </div>
               </div>
@@ -102,7 +128,7 @@ export default function HomePage() {
                 <video
                   src="/videos/intro.mp4"
                   poster="/images/intro-thumbnail.jpg"
-                  className="w-full rounded-xl shadow-xl"
+                  className="w-full rounded-xl "
                   width={600}
                   height={400}
                   controls={isPlaying}
@@ -124,7 +150,7 @@ export default function HomePage() {
                       <div className="relative">
                         <div className="absolute -inset-4 bg-white/30 rounded-full blur-md" />
                         <div className="relative bg-white w-16 h-16 rounded-full flex items-center justify-center
-                                      shadow-lg hover:bg-primary/10 transition-colors duration-300">
+                                      hover:bg-primary/10 transition-colors duration-300">
                           <Play className="w-8 h-8 text-primary fill-primary" />
                         </div>
                       </div>
@@ -140,6 +166,7 @@ export default function HomePage() {
           </div>
         </div>
 
+
         {/* Interface Introduction */}
         <div className="py-20 border-b">
           <div className="container mx-auto px-4">
@@ -154,30 +181,10 @@ export default function HomePage() {
             </div>
             <div className="relative">
               <div className="flex items-center">
-                <Image src="/images/s1.png" alt="AI Voice Interface" width={1200} height={675} className="rounded-xl shadow-xl mx-auto" />
+                <Image src="/images/s1.png" alt="AI Voice Interface" width={1200} height={675} className="rounded-xl  mx-auto" />
               </div>
               {/* Optional: Add gradient overlay at the bottom */}
               <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent" />
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="py-12 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">100+</div>
-                <div className="text-gray-600">Giọng đọc</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">1M+</div>
-                <div className="text-gray-600">Người dùng</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">10+</div>
-                <div className="text-gray-600">Ngôn ngữ</div>
-              </div>
             </div>
           </div>
         </div>
@@ -410,6 +417,13 @@ export default function HomePage() {
         onClose={() => setShowRegisterDialog(false)}
         onRegister={handleRegister}
         onSwitchToLogin={switchToLogin}
+      />
+
+      <VoiceSelectionModal
+        isTry
+        onVoiceSelect={() => { }}
+        isOpen={showVoiceModal}
+        onClose={() => setShowVoiceModal(false)}
       />
     </>
   )

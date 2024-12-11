@@ -2,7 +2,7 @@
 
 AIVoice là một ứng dụng web hiện đại cho phép chuyển đổi văn bản thành giọng nói với chất lượng cao, sử dụng công nghệ AI tiên tiến.
 
-##�� Tính Năng Chính
+## Tính Năng Chính
 
 - **Đa dạng giọng đọc**: Hỗ trợ nhiều giọng đọc nam nữ từ các vùng miền khác nhau
 - **Tùy chỉnh linh hoạt**: Điều chỉnh tốc độ, cao độ và ngữ điệu của giọng đọc

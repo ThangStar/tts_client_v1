@@ -5,7 +5,7 @@ import { Button, Chip, Pagination, Table, TableBody, TableCell, TableColumn, Tab
 import { Copy } from "lucide-react"
 import { useState } from "react"
 
-const statusColorMap = {
+const statusColorMap: Record<string, "primary" | "default" | "secondary" | "success" | "warning" | "danger"> = {
     pending: "warning",
     success: "success",
     failed: "danger",
@@ -143,7 +143,7 @@ export default function PaymentHistoryPage() {
                             <TableRow key={item.id}>
                                 {(columnKey) => (
                                     <TableCell>
-                                        {renderCell(item, columnKey)}
+                                        {renderCell(item, columnKey as string)}
                                     </TableCell>
                                 )}
                             </TableRow>

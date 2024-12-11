@@ -7,7 +7,7 @@ const action = {
     login: createAsyncThunk('auth/login', async (params: auth_login_params_dto, thunkAPI) => {
         try {
             const res = await AuthApi.login(params);
-            return thunkAPI.fulfillWithValue(res)
+            return thunkAPI.fulfillWithValue(res.data)
         } catch (error) {
             return thunkAPI.rejectWithValue(error)
         }
@@ -56,8 +56,8 @@ export const authenticateSlice = createSlice({
             state.redirectTo = '/text-to-speech'
         })
         .addCase(action.login.rejected, (state, action: any) => {
-            console.log("rejected", action.payload.response.data);
-            if (action.payload.response.status === 403) {
+            console.log("rejected", action.payload);
+            if (action.payload.response && action.payload.response.status === 403) {
                 toast.error('Tài khoản hoặc mật khẩu không đúng')
             } else {
                 toast.error('Đăng nhập thất bại')

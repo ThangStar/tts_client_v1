@@ -73,19 +73,19 @@ export default function Navbar() {
                         </Link>
 
                         <div className="hidden md:flex items-center space-x-8">
-                            <Link
+                            <a
                                 href="/text-to-speech"
                                 className={`hover:text-primary ${pathname === '/text-to-speech' ? 'text-primary' : ''}`}
                             >
                                 Text to Speech
-                            </Link>
+                            </a>
 
-                            <Link
+                            <a
                                 href="/api-endpoint"
                                 className={`hover:text-primary ${pathname === '/api' ? 'text-primary' : ''}`}
                             >
                                 AIVoice API
-                            </Link>
+                            </a>
                             <div className="relative group">
                                 <button className="hover:text-primary flex items-center">
                                     Liên hệ
@@ -101,9 +101,7 @@ export default function Navbar() {
                                 <Image src="/images/vi-flag.png" alt="Vietnamese" width={20} height={20} />
                                 <span>VI</span>
                             </div>
-                            <Button variant="light" className="hidden md:block" onClick={() => setShowLoginDialog(true)}>
-                                Đăng nhập
-                            </Button>
+                           
                             <Button color="warning" onClick={handleTryFreeClick}>
                                 Dùng thử miễn phí
                             </Button>

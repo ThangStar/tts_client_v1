@@ -1,10 +1,5 @@
 'use client'
 
-import { Button, Input, Radio, RadioGroup } from "@nextui-org/react"
-import { ArrowLeft, ChevronDown } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useState } from "react"
 import VoiceHistoryList from "../components/VoiceHistoryList"
 import Layout from "../components/layout/layout"
 

@@ -1,10 +1,10 @@
 'use client'
 
-import { Button, Input, Radio, RadioGroup } from "@nextui-org/react"
+import { Button, Radio, RadioGroup } from "@nextui-org/react"
 import { ArrowLeft, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import BankTransferDialog from "../components/payment/BankTransferDialog"
 import { useSearchParams } from "next/navigation"
 import { formatVND } from "@/lib/utils"
@@ -69,7 +69,7 @@ const plans = [
     },
 ];
 
-export default function PaymentPage() {
+function PaymentPageContent() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const searchParams = useSearchParams()
     const period = searchParams.get('period')
@@ -119,8 +119,8 @@ export default function PaymentPage() {
                             >
                                 <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3">
-                                        {method.icon ? (
-                                            <span className="text-2xl">{method.icon}</span>
+                                        {method.logo ? (
+                                            <span className="text-2xl">{method.logo}</span>
                                         ) : (
                                             <div className="w-8 h-8 relative">
                                                 <Image
@@ -133,8 +133,8 @@ export default function PaymentPage() {
                                         )}
                                         <span>{method.name}</span>
                                     </div>
-                                    {method.description && (
-                                        <span className="text-sm text-default-500">{method.description}</span>
+                                    {method.name && (
+                                        <span className="text-sm text-default-500">{method.name}</span>
                                     )}
                                 </div>
                             </Radio>
@@ -209,5 +209,13 @@ export default function PaymentPage() {
                 </div>
             </div>
         </div>
+    )
+}
+
+export default function PaymentPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <PaymentPageContent />
+        </Suspense>
     )
 } 

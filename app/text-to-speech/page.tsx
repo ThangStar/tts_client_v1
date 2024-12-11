@@ -14,32 +14,37 @@ import {
 import { Search, Clock, ChevronDown } from 'lucide-react'
 import React, { useState } from "react"
 import VoiceSelectionModal from '../components/VoiceSelectionModal'
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 import VoiceHistoryList from "../components/VoiceHistoryList"
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice"
 import toast from "react-hot-toast"
+import { Actor } from "../types/actor.type"
 
 export default function Page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedVoice, setSelectedVoice] = useState({
-    id: "1",
+  const [selectedVoice, setSelectedVoice] = useState<Actor>({
+    id: 1,
     name: "HN - Ngọc Huyền",
-    avatar: "https://i.pravatar.cc/150?img=44",
-    type: "Tổng đài",
-    gender: "female",
-    language: "vi",
-    quality: "premium",
+    code: "hn_ngochuyen",
+    gender: "FEMALE",
+    type: "PREMIUM",
+    language: {
+      id: 1,
+      name: "Tiếng Việt",
+      code: "VN",
+    }
   });
 
-  const voiceHistories = useSelector((state: any) => state.voiceHistories.value.voiceHistories);
+  // const voiceHistories = useSelector((state: any) => state.voiceHistories.value.voiceHistories);
 
-  const handleVoiceSelect = (voice: any) => {
+  const handleVoiceSelect = (voice: Actor) => {
     setSelectedVoice(voice);
+    console.log(voice);
     onClose();
   };
 
   const dispatch = useDispatch<any>();
-  const { tts } = VoiceHistoryAction
+  const { tts, ttsPending } = VoiceHistoryAction
   const [text, setText] = useState("")
   const [isFocused, setIsFocused] = useState(false);
 
@@ -54,11 +59,10 @@ export default function Page() {
     toast.success("Đã thêm vào danh sách yêu cầu...")
     const params = {
       prompt: text,
-      language: selectedVoice.language,
-      voice_type: selectedVoice.type,
+      code: selectedVoice.code || "",
     }
     console.log(params);
-    
+    dispatch(ttsPending(params))
     dispatch(tts(params))
   }
 

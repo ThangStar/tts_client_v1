@@ -1,21 +1,22 @@
 export type Actor = {
-    id: number,
-    name: string,
-    gender: string,
-    type: string,
-    description: string,
-    avatar: string,
-    is_premium: boolean,
-    sample_audio: string,
-    language: {
-        id: number,
-        name: string,
-        code: string
+    id?: number,
+    name?: string,
+    code?: string,
+    gender?: string,
+    type?: string,
+    description?: string,
+    avatar?: string,
+    is_premium?: boolean,
+    sample_audio?: string,
+    language?: {
+        id?: number,
+        name?: string,
+        code?: string
     },
-    category: {
+    category?: {
         id: number,
-        name: string,
-        code: string
+        name?: string,
+        code?: string
     }
 }
 

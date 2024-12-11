@@ -1,11 +1,14 @@
 import { Table, Chip, Button, TableColumn, TableRow, TableCell, TableBody, TableHeader, Pagination } from "@nextui-org/react";
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CheckCircle2, Clock, Download, Trash2, Play } from 'lucide-react';
+import { CheckCircle2, Clock, Download, Trash2, Play, Pause } from 'lucide-react';
+import { tts_response_dto } from "../api/tts.api";
 
 const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
     const voiceHistories = useSelector((state: { voiceHistories: any }) => state.voiceHistories.value.voiceHistories);
     const [page, setPage] = React.useState(1);
+    const [playingId, setPlayingId] = useState<string | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const pages = Math.ceil(voiceHistories.length / rowsPerPage);
     const items = React.useMemo(() => {
@@ -17,13 +20,69 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
     const columns = [
         { name: "#", uid: "index" },
         { name: "Giọng đọc", uid: "name" },
-        { name: "Nội dung", uid: "content" },
+        { name: "Nội dung", uid: "metadata", width: "300px" },
         { name: "Ngày tạo", uid: "date" },
         { name: "Trạng thái", uid: "status" },
         { name: "Hành động", uid: "actions" }
     ];
 
-    const renderCell = (item, columnKey, rowIndex) => {
+    const handlePlay = (url: string, id: string) => {
+        if (!audioRef.current) {
+            audioRef.current = new Audio();
+        }
+
+        if (playingId === id) {
+            // Pause current audio
+            audioRef.current.pause();
+            setPlayingId(null);
+        } else {
+            // If another audio is playing, pause it first
+            if (audioRef.current.src) {
+                audioRef.current.pause();
+            }
+
+            // Play new audio
+            audioRef.current.src = url;
+            audioRef.current.play();
+            setPlayingId(id);
+
+            // Add ended event listener
+            audioRef.current.onended = () => {
+                setPlayingId(null);
+            };
+        }
+    };
+
+    const handleDownload = async (url: string, filename?: string) => {
+        try {
+            // Fetch the audio file
+            const response = await fetch(url);
+            const blob = await response.blob();
+            
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            
+            // Set the download filename
+            link.download = filename || 'audio.mp3';
+            
+            // Append to body, click and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Clean up the URL object
+            window.URL.revokeObjectURL(link.href);
+        } catch (error) {
+            console.error('Download failed:', error);
+        }
+    };
+
+    const renderCell = (item: tts_response_dto, columnKey: any, rowIndex: any) => {
+        console.log("item", item);
+        console.log("columnKey", columnKey);
+        console.log("rowIndex", rowIndex);
+
         switch (columnKey) {
             case "index":
                 return (
@@ -31,16 +90,18 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                         <p className="text-bold text-sm">{rowIndex + 1}</p>
                     </div>
                 );
-            case "name":
-                return (
-                    <div className="flex flex-col">
-                        <p className="text-bold text-sm">{item.voice.name}</p>
-                    </div>
-                );
             case "content":
                 return (
                     <div className="flex flex-col">
-                        <p className="text-bold text-sm">{item.voice.content}</p>
+                        <p className="text-bold text-sm">{item.content}</p>
+                    </div>
+                );
+            case "metadata":
+                return (
+                    <div className="flex flex-col">
+                        <p className="text-bold text-sm whitespace-pre-wrap text-ellipsis line-clamp-3 break-words">
+                            {item.metadata?.prompt.trim()}
+                        </p>
                     </div>
                 );
             case "date":
@@ -65,8 +126,8 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                         color={item.progress ? "warning" : "success"}
                         size="sm"
                         variant="flat"
-                        startContent={item.progress ? 
-                            <Clock className="w-3 h-3" /> : 
+                        startContent={item.progress ?
+                            <Clock className="w-3 h-3" /> :
                             <CheckCircle2 className="w-3 h-3" />
                         }
                     >
@@ -78,25 +139,31 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                     <div className="flex items-center gap-2">
                         {!item.progress && (
                             <>
-                                <Button 
-                                    isIconOnly 
-                                    size="sm" 
+                                <Button
+                                    isIconOnly
+                                    size="sm"
                                     variant="light"
-                                    onClick={() => console.log('Play clicked')}
+                                    onClick={() => handlePlay(item.url || '', item.id || "")}
                                 >
-                                    <Play className="w-4 h-4" />
+                                    {playingId === item.id ?
+                                        <Pause className="w-4 h-4" /> :
+                                        <Play className="w-4 h-4" />
+                                    }
                                 </Button>
-                                <Button 
-                                    isIconOnly 
-                                    size="sm" 
+                                <Button
+                                    isIconOnly
+                                    size="sm"
                                     variant="light"
-                                    onClick={() => console.log('Download clicked')}
+                                    onClick={() => handleDownload(
+                                        item.url || '', 
+                                        `audio_${item.id || new Date().getTime()}.mp3`
+                                    )}
                                 >
                                     <Download className="w-4 h-4" />
                                 </Button>
-                                <Button 
-                                    isIconOnly 
-                                    size="sm" 
+                                <Button
+                                    isIconOnly
+                                    size="sm"
                                     variant="light"
                                     onClick={() => console.log('Delete clicked')}
                                 >
@@ -105,10 +172,10 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                             </>
                         )}
                         {item.progress && (
-                            <Button 
-                                isIconOnly 
-                                size="sm" 
-                                variant="light" 
+                            <Button
+                                isIconOnly
+                                size="sm"
+                                variant="light"
                                 color="danger"
                                 onClick={() => console.log('Delete clicked')}
                             >
@@ -138,7 +205,7 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
             >
                 <TableHeader columns={columns}>
                     {(column) => (
-                        <TableColumn 
+                        <TableColumn
                             key={column.uid}
                             align={column.uid === "actions" ? "center" : "start"}
                         >
@@ -147,7 +214,7 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                     )}
                 </TableHeader>
                 <TableBody items={items}>
-                    {items.map((item, index) => (
+                    {items.map((item: any, index: number) => (
                         <TableRow key={index}>
                             {(columnKey) => (
                                 <TableCell>{renderCell(item, columnKey, ((page - 1) * rowsPerPage) + index)}</TableCell>

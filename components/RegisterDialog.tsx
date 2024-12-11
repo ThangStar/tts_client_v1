@@ -2,8 +2,9 @@
 
 import { auth_register_params_dto } from "@/app/api/auth.api"
 import { Modal, ModalContent, ModalBody, Button, Input } from "@nextui-org/react"
-import { Mail, Lock, User } from "lucide-react"
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react"
 import { useForm } from "react-hook-form"
+import { useState } from 'react'
 
 type RegisterInput = {
   name: string
@@ -18,6 +19,7 @@ export default function RegisterDialog({ isOpen, onClose, onRegister, onSwitchTo
   onSwitchToLogin: () => void
 }) {
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterInput>()
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl">
@@ -26,7 +28,7 @@ export default function RegisterDialog({ isOpen, onClose, onRegister, onSwitchTo
           <div className="flex flex-col items-center gap-6">
             <h1 className="text-2xl font-bold">Đăng ký</h1>
             <p className="text-default-500">Tạo tài khoản để sử dụng dịch vụ của chúng tôi</p>
-            
+
             <form className="w-full" onSubmit={handleSubmit((data) => onRegister({
               displayName: data.name,
               email: data.email,
@@ -42,9 +44,9 @@ export default function RegisterDialog({ isOpen, onClose, onRegister, onSwitchTo
                 {errors.name && <p className="text-red-500">{errors.name.message}</p>}
 
                 <Input
-                  {...register('email', { 
-                    required: 'Email là bắt buộc', 
-                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email không đúng định dạng' } 
+                  {...register('email', {
+                    required: 'Email là bắt buộc',
+                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email không đúng định dạng' }
                   })}
                   label="Email"
                   placeholder="Nhập email của bạn"
@@ -56,17 +58,32 @@ export default function RegisterDialog({ isOpen, onClose, onRegister, onSwitchTo
                   {...register('password', {
                     required: 'Mật khẩu là bắt buộc',
                     minLength: { value: 8, message: 'Mật khẩu phải có ít nhất 8 ký tự' },
-                    pattern: { value: /^(?=.*[a-zA-Z])(?=.*\d).+$/, message: 'Mật khẩu phải có ít nhất một chữ cái và một số' }
+                    pattern: { value: /^(?=.*[a-zA-Z])(?=.*\d).+$/, message: 'Mật khẩu phải có ít nhất một chữ cái và một số' },
+                    maxLength: { value: 30, message: 'Mật khẩu không được quá 30 ký tự' }
                   })}
                   label="Mật khẩu"
-                  type="password"
+                  type={isPasswordVisible ? "text" : "password"}
                   placeholder="Nhập mật khẩu"
                   startContent={<Lock className="w-4 h-4 text-default-400" />}
+                  endContent={
+                    <Button
+                      isIconOnly
+                      variant="light"
+                      size="sm"
+                      className="focus:outline-none"
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                      {isPasswordVisible ?
+                        <EyeOff className="w-4 h-4 text-default-400" /> :
+                        <Eye className="w-4 h-4 text-default-400" />
+                      }
+                    </Button>
+                  }
                 />
                 {errors.password && <p className="text-red-500">{errors.password.message}</p>}
-                
-                <Button 
-                  color="primary" 
+
+                <Button
+                  color="primary"
                   className="w-full"
                   size="lg"
                   type="submit"
@@ -78,8 +95,8 @@ export default function RegisterDialog({ isOpen, onClose, onRegister, onSwitchTo
 
             <p className="text-center text-default-500">
               Đã có tài khoản? {" "}
-              <Button 
-                variant="light" 
+              <Button
+                variant="light"
                 className="text-primary p-0"
                 onClick={onSwitchToLogin}
               >

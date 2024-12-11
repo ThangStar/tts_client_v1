@@ -1,8 +1,9 @@
 'use client'
 
 import { Modal, ModalContent, ModalHeader, ModalBody, Button, Input } from "@nextui-org/react"
-import { Mail, Lock } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useForm } from "react-hook-form"
+import { useState } from 'react'
 
 type LoginInput = {
   email: string
@@ -16,6 +17,8 @@ export default function LoginDialog({ isOpen, onClose, onLogin, onSwitchToRegist
 }) {
 
   const { register, handleSubmit, formState: { errors }} = useForm<LoginInput>()
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="2xl">
       <ModalContent>
@@ -42,9 +45,23 @@ export default function LoginDialog({ isOpen, onClose, onLogin, onSwitchToRegist
                     maxLength: { value: 30, message: 'Mật khẩu không được quá 30 ký tự' }
                   })}
                   label="Mật khẩu"
-                  type="password"
+                  type={isPasswordVisible ? "text" : "password"}
                   placeholder="Nhập mật khẩu"
                   startContent={<Lock className="w-4 h-4 text-default-400" />}
+                  endContent={
+                    <Button
+                      isIconOnly
+                      variant="light"
+                      size="sm"
+                      className="focus:outline-none"
+                      onClick={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                      {isPasswordVisible ? 
+                        <EyeOff className="w-4 h-4 text-default-400" /> : 
+                        <Eye className="w-4 h-4 text-default-400" />
+                      }
+                    </Button>
+                  }
                 />
                 {errors.password && <p className="text-red-500">{errors.password.message}</p>}
 

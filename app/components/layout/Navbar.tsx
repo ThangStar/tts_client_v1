@@ -1,6 +1,6 @@
 'use client'
 
-import { AudioWaveform, Crown, Settings } from 'lucide-react'
+import { AudioWaveform } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Navbar() {

@@ -6,7 +6,7 @@ import { tts_response_dto } from "../api/tts.api";
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice";
 import Image from "next/image";
 
-export default function VoiceHistoryList({ searchContent }: { searchContent: string }) {
+export default function VoiceHistoryList({ searchContent }: { searchContent: string, rowsPerPage: number }) {
     const voiceHistories = useSelector((state: { voiceHistories: any }) => state.voiceHistories.value.voiceHistories);
     const [currentPage, setCurrentPage] = useState(1);
     const [playingId, setPlayingId] = useState<string | null>(null);

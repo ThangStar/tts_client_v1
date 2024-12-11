@@ -221,6 +221,7 @@ export default function Page() {
               <div className="overflow-x-auto">
                 <div className="min-w-[800px]">
                   <VoiceHistoryList 
+                  rowsPerPage={5}
                     searchContent={search}
                     key={search}
                   />

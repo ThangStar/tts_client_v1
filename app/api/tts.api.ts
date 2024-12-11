@@ -15,6 +15,7 @@ export type tts_response_dto = {
     url?: string,
     progress?: boolean,
     content?: string,
+    voice?: Actor,
     metadata?: {
         prompt: string,
         language: string,
@@ -40,7 +41,27 @@ export type voice_list_response_dto = {
     },
 }
 
+export type history_list_params_dto = {
+    search?: string,
+    limit: number,
+    page: number,
+}
+export type history_list_response_dto = {
+    statusCode: number,
+    message: string,
+    data: {
+        items: tts_response_dto[],
+        meta: {
+            limit: number,
+            page: number,
+            total: number,
+            totalPages: number,
+        },
+    },
+
+}
 export const TTSApi = {
     tts: async (params: tts_params_dto) => (await http.post("/tts", params)).data.data as tts_response_dto,
     voices: async (params: voice_list_params_dto) => (await http.get("/tts/voices", { params: params })).data.data as voice_list_response_dto,
+    history: async (params: history_list_params_dto) => (await http.get("/tts/history", { params: params })).data as history_list_response_dto,
 }

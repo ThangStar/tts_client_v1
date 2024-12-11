@@ -123,9 +123,7 @@ export default function VoiceSelectionModal({
     }
 
     if (playingId !== actor.id) {
-      console.log(actor.sample_audio);
-
-      const newAudio = new Audio(`${process.env.NEXT_PUBLIC_API_URL || '' + actor.sample_audio}`);
+      const newAudio = new Audio(`${(process.env.NEXT_PUBLIC_API_URL || '') + actor?.sample_audio}`);
       newAudio.play();
       newAudio.onended = () => setPlayingId(null);
       setAudio(newAudio);
@@ -245,7 +243,7 @@ export default function VoiceSelectionModal({
                               <Chip size="sm" color="warning" variant="flat">Premium</Chip>
                             )}
                           </div>
-                          <div className="text-sm text-default-500">{actor.type}</div>
+                          <div className="text-sm text-default-500">{actor.category?.name}</div>
                         </div>
                       </div>
                       <Button

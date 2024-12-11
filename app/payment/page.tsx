@@ -8,6 +8,7 @@ import { useState, Suspense } from "react"
 import BankTransferDialog from "../components/payment/BankTransferDialog"
 import { useSearchParams } from "next/navigation"
 import { formatVND } from "@/lib/utils"
+import { useSelector } from "react-redux"
 
 const paymentMethods = [
     {
@@ -76,7 +77,9 @@ function PaymentPageContent() {
     const type = searchParams.get('type')
     const data = plans.find(plan => plan.period === period && plan.type === Number(type))
     const defaultPaymentMethod = paymentMethods.find(method => method.selected)?.id || paymentMethods[0].id
-
+    const user = useSelector((state: any) => state.authenticate.value.user)
+    // console.log(user);
+    
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
             <div className="flex items-center gap-2 mb-6">
@@ -119,23 +122,16 @@ function PaymentPageContent() {
                             >
                                 <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3">
-                                        {method.logo ? (
-                                            <span className="text-2xl">{method.logo}</span>
-                                        ) : (
-                                            <div className="w-8 h-8 relative">
-                                                <Image
-                                                    src={method.logo!}
-                                                    alt={method.name}
-                                                    fill
-                                                    className="object-contain"
-                                                />
-                                            </div>
-                                        )}
-                                        <span>{method.name}</span>
+                                        <div className="w-16 h-8 relative">
+                                            <Image
+                                                src={method.logo}
+                                                alt={method.name}
+                                                fill
+                                                className="object-contain"
+                                            />
+                                        </div>
+                                        <span className="font-medium">{method.name}</span>
                                     </div>
-                                    {method.name && (
-                                        <span className="text-sm text-default-500">{method.name}</span>
-                                    )}
                                 </div>
                             </Radio>
                         ))}
@@ -148,7 +144,7 @@ function PaymentPageContent() {
                     <div className="space-y-4">
                         <div>
                             <label className="text-sm text-default-600">Người mua hàng</label>
-                            <div className="font-medium">Star Tháng</div>
+                            <div className="font-medium">{user?.display_name}</div>
                         </div>
 
                         <div className="space-y-2">

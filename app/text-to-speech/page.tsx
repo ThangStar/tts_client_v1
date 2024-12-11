@@ -19,6 +19,8 @@ import VoiceHistoryList from "../components/VoiceHistoryList"
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice"
 import toast from "react-hot-toast"
 import { Actor } from "../types/actor.type"
+import { tts_params_dto } from "../api/tts.api"
+import { omit } from "lodash"
 
 export default function Page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,7 +46,7 @@ export default function Page() {
   };
 
   const dispatch = useDispatch<any>();
-  const { tts, ttsPending } = VoiceHistoryAction
+  const { tts, ttsPending,history } = VoiceHistoryAction
   const [text, setText] = useState("")
   const [isFocused, setIsFocused] = useState(false);
 
@@ -57,13 +59,14 @@ export default function Page() {
       return
     }
     toast.success("Đã thêm vào danh sách yêu cầu...")
-    const params = {
+    const params: tts_params_dto & { actor: Actor } = {
       prompt: text,
       code: selectedVoice.code || "",
+      actor: selectedVoice,
     }
     console.log(params);
     dispatch(ttsPending(params))
-    dispatch(tts(params))
+    dispatch(tts(omit(params, 'actor')))
   }
 
   const handleValidateText = (value: string): string | null => {
@@ -78,6 +81,16 @@ export default function Page() {
       return "Nội dung không được vượt quá 200 ký tự";
     }
     return null;
+  }
+  const [search, setSearch] = useState("")
+  const handleSearch = (e: any) => {
+    setSearch(e.target.value)
+    dispatch(history({
+      page: 1,
+      limit: 5,
+      search: e.target.value
+    }))
+
   }
   return (
     <Layout>
@@ -117,17 +130,16 @@ export default function Page() {
                     >
                       Tải tệp lên
                     </Button>
-                    <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">mp3</Button>
-                    <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">0.5s</Button>
-                    <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">128 kbps</Button>
+                    <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">wav</Button>
+                    <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">320 kbps</Button>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-default-500">00:00</span>
                   <Button
                     type="submit"
-                    color="primary"
-                    className="font-medium shadow-lg hover:shadow-primary/25 transition-shadow"
+                    className="font-medium bg-gradient-to-tr from-primary to-primary-600 text-white shadow-lg 
+                    hover:shadow-primary/30 hover:opacity-90 active:opacity-80 transition-all duration-300
+                    px-6 py-2 rounded-xl border border-primary-200/50"
                   >
                     Chuyển đổi
                   </Button>
@@ -136,7 +148,7 @@ export default function Page() {
               {/* Text Input */}
               <div className="mb-6">
                 <Textarea
-                  placeholder="Nhập, copy văn bản hoặc tải tệp lên để chuyển thành giọng nói..."
+                  placeholder="Nhập hoặc copy và dán văn bản vào đây để chuyển thành giọng nói..."
                   minRows={8}
                   validate={(value) => {
                     if (!isFocused) return null;
@@ -184,9 +196,10 @@ export default function Page() {
               </Button>
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 w-full lg:w-auto">
                 <Input
-                  placeholder="Tìm kiếm theo tiêu đề"
+                  placeholder="Tìm kiếm theo nội dung"
                   startContent={<Search className="text-default-400 w-4 h-4" />}
                   size="sm"
+                  value={search}
                   className="w-full lg:w-64"
                   variant="bordered"
                   classNames={{
@@ -194,6 +207,7 @@ export default function Page() {
                     innerWrapper: "focus-within:border-primary",
                     inputWrapper: "hover:border-primary-300 focus-within:border-primary"
                   }}
+                  onChange={handleSearch}
                 />
                 <Button variant="flat" className="bg-white shadow-sm hover:shadow" endContent={<ChevronDown className="w-4 h-4" />}>
                   Trạng thái
@@ -203,10 +217,13 @@ export default function Page() {
                 </Button>
               </div>
             </div>
-            <div className="flex flex-col gap-4 bg-white h-[380px] -mx-3 p-4 mt-4">
+            <div className="flex flex-col gap-4 bg-white h-[350px] -mx-3 p-2">
               <div className="overflow-x-auto">
                 <div className="min-w-[800px]">
-                  <VoiceHistoryList />
+                  <VoiceHistoryList 
+                    searchContent={search}
+                    key={search}
+                  />
                 </div>
               </div>
             </div>

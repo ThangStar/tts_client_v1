@@ -1,25 +1,20 @@
 import { Table, Chip, Button, TableColumn, TableRow, TableCell, TableBody, TableHeader, Pagination } from "@nextui-org/react";
-import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { CheckCircle2, Clock, Download, Trash2, Play, Pause } from 'lucide-react';
 import { tts_response_dto } from "../api/tts.api";
+import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice";
+import Image from "next/image";
 
-const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
+export default function VoiceHistoryList({ searchContent }: { searchContent: string }) {
     const voiceHistories = useSelector((state: { voiceHistories: any }) => state.voiceHistories.value.voiceHistories);
-    const [page, setPage] = React.useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const [playingId, setPlayingId] = useState<string | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    const pages = Math.ceil(voiceHistories.length / rowsPerPage);
-    const items = React.useMemo(() => {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-        return voiceHistories.slice(start, end);
-    }, [page, voiceHistories]);
-
     const columns = [
         { name: "#", uid: "index" },
-        { name: "Giọng đọc", uid: "name" },
+        { name: "Giọng đọc", uid: "voice" },
         { name: "Nội dung", uid: "metadata", width: "300px" },
         { name: "Ngày tạo", uid: "date" },
         { name: "Trạng thái", uid: "status" },
@@ -58,19 +53,19 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
             // Fetch the audio file
             const response = await fetch(url);
             const blob = await response.blob();
-            
+
             // Create a temporary link element
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            
+
             // Set the download filename
             link.download = filename || 'audio.mp3';
-            
+
             // Append to body, click and remove
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             // Clean up the URL object
             window.URL.revokeObjectURL(link.href);
         } catch (error) {
@@ -79,10 +74,6 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
     };
 
     const renderCell = (item: tts_response_dto, columnKey: any, rowIndex: any) => {
-        console.log("item", item);
-        console.log("columnKey", columnKey);
-        console.log("rowIndex", rowIndex);
-
         switch (columnKey) {
             case "index":
                 return (
@@ -90,10 +81,23 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                         <p className="text-bold text-sm">{rowIndex + 1}</p>
                     </div>
                 );
-            case "content":
+            case "voice":
                 return (
-                    <div className="flex flex-col">
-                        <p className="text-bold text-sm">{item.content}</p>
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden">
+                            <Image
+                                src={item.voice?.avatar || '/default-avatar.png'}
+                                alt="avatar"
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = '/default-avatar.png';
+                                }}
+                            />
+                        </div>
+                        <p className="text-bold text-sm">{item.voice?.name}</p>
                     </div>
                 );
             case "metadata":
@@ -155,7 +159,7 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                                     size="sm"
                                     variant="light"
                                     onClick={() => handleDownload(
-                                        item.url || '', 
+                                        item.url || '',
                                         `audio_${item.id || new Date().getTime()}.mp3`
                                     )}
                                 >
@@ -189,6 +193,26 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
         }
     };
 
+    const dispatch = useDispatch<any>();
+    const { history } = VoiceHistoryAction
+    useEffect(() => {
+        dispatch(history({
+            limit: 5,
+            page: currentPage,
+            search: searchContent
+        }));
+    }, [dispatch, history, currentPage, searchContent]);
+
+    const pages = voiceHistories.data.meta?.totalPages || 1;
+    console.log(voiceHistories.data.meta);
+    
+    const items = voiceHistories.data.items;
+
+    // Reset currentPage về 1 khi searchContent thay đổi
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchContent]);
+
     return (
         <div className="flex flex-col h-[600px]">
             <Table
@@ -217,7 +241,7 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                     {items.map((item: any, index: number) => (
                         <TableRow key={index}>
                             {(columnKey) => (
-                                <TableCell>{renderCell(item, columnKey, ((page - 1) * rowsPerPage) + index)}</TableCell>
+                                <TableCell>{renderCell(item, columnKey, ((currentPage - 1) * 5) + index)}</TableCell>
                             )}
                         </TableRow>
                     ))}
@@ -229,13 +253,11 @@ const VoiceHistoryList = ({ rowsPerPage = 5 }: { rowsPerPage?: number }) => {
                     showControls
                     showShadow
                     color="primary"
-                    page={page}
+                    page={currentPage}
                     total={pages}
-                    onChange={(page) => setPage(page)}
+                    onChange={(page) => setCurrentPage(page)}
                 />
             </div>
         </div>
     );
-};
-
-export default VoiceHistoryList; 
+}; 

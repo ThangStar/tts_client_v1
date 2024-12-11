@@ -235,7 +235,7 @@ export default function HomePage() {
                   <div className="rounded-full bg-primary/10 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                     <Video className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">a dạng ứng dụng</h3>
+                  <h3 className="text-xl font-semibold mb-2">Đa dạng ứng dụng</h3>
                   <p className="text-default-500">
                     Dễ dàng tạo video quảng cáo, review phim, broadcast, video giảng dạy sinh động
                   </p>

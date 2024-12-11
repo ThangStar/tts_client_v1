@@ -28,6 +28,15 @@ export default function RegisterDialog({ isOpen, onClose, onRegister, onSwitchTo
           <div className="flex flex-col items-center gap-6">
             <h1 className="text-2xl font-bold">Đăng ký</h1>
             <p className="text-default-500">Tạo tài khoản để sử dụng dịch vụ của chúng tôi</p>
+            <div className="w-full p-4 bg-blue-50 rounded-lg border border-blue-200 flex items-start gap-3">
+              <Mail className="w-5 h-5 text-blue-500 mt-0.5" />
+              <div>
+                <p className="text-blue-800 font-medium">Yêu cầu về email</p>
+                <p className="text-blue-600 text-sm">
+                  Hiện tại, chúng tôi chỉ hỗ trợ đăng ký bằng tài khoản Gmail (@gmail.com) để đảm bảo tính minh bạch cho người dùng.
+                </p>
+              </div>
+            </div>
 
             <form className="w-full" onSubmit={handleSubmit((data) => onRegister({
               displayName: data.name,
@@ -46,7 +55,10 @@ export default function RegisterDialog({ isOpen, onClose, onRegister, onSwitchTo
                 <Input
                   {...register('email', {
                     required: 'Email là bắt buộc',
-                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email không đúng định dạng' }
+                    pattern: { 
+                      value: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+                      message: 'Vui lòng sử dụng địa chỉ Gmail' 
+                    }
                   })}
                   label="Email"
                   placeholder="Nhập email của bạn"

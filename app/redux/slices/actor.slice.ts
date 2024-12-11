@@ -36,13 +36,9 @@ export const actorSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(action.listActor.fulfilled, (state, action) => {
-            console.log("ACTORES", action.payload);
             state.value.actors = action.payload
         })
-            .addCase(action.listActor.rejected, (state, action) => {
-                console.log("ACTORES FAILED", action.payload);
-
-            })
+        
     },
 })
 export const ActorAction = {

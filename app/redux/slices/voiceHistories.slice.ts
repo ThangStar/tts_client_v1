@@ -82,7 +82,7 @@ export const voiceHistorySlice = createSlice({
                     meta: state.value.voiceHistories.data.meta
                 }
             })
-            .addCase(action.tts.rejected, (state, action) => {
+            .addCase(action.tts.rejected, (state) => {
                 state.value.voiceHistories.data.items.push({
                     progress: false,
                     status: "error",

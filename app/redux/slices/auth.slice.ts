@@ -56,7 +56,6 @@ export const authenticateSlice = createSlice({
             state.redirectTo = '/text-to-speech'
         })
         .addCase(action.login.rejected, (state, action: any) => {
-            console.log("rejected", action.payload);
             if (action.payload.response && action.payload.response.status === 403) {
                 toast.error('Tài khoản hoặc mật khẩu không đúng')
             } else {
@@ -69,7 +68,6 @@ export const authenticateSlice = createSlice({
             state.redirectTo = '/text-to-speech'
         })
         .addCase(action.register.rejected, (state, action: any) => {
-            console.log("rejected", action.payload.response.data);
             if (action.payload.response.status === 400) {
                 toast.error('Địa chỉ email đã tồn tại')
             } else {
@@ -77,7 +75,6 @@ export const authenticateSlice = createSlice({
             }
         })
         .addCase(action.profile.fulfilled, (state, action) => {
-            console.log("profile", action.payload)
             state.value.user = action.payload
             state.redirectTo = '/text-to-speech'
         })

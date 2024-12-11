@@ -58,7 +58,6 @@ export default function HomePage() {
       // Implement register logic here
       // setShowRegisterDialog(false)
       // setShowLoginDialog(true) // Show login after successful registration
-      console.log(params);
 
       dispatch(authAction.register(params))
     } catch (error) {

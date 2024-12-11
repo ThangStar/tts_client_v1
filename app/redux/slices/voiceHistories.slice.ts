@@ -55,7 +55,6 @@ export const voiceHistorySlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(action.tts.fulfilled, (state, action) => {
-            console.log("fulfilled", action.payload)
             const index = state.value.voiceHistories.data.items.findIndex(voice => voice.metadata?.prompt === action.payload.metadata?.prompt)
             if (index !== -1) {
                 const newVoice = { ...action.payload, progress: false } as tts_response_dto;
@@ -84,7 +83,6 @@ export const voiceHistorySlice = createSlice({
                 }
             })
             .addCase(action.tts.rejected, (state, action) => {
-                console.log("rejected", action.payload)
                 state.value.voiceHistories.data.items.push({
                     progress: false,
                     status: "error",

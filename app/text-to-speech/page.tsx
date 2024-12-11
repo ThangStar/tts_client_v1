@@ -26,10 +26,19 @@ export default function Page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedVoice, setSelectedVoice] = useState<Actor>({
     id: 1,
-    name: "HN - Ngọc Huyền",
-    code: "hn_ngochuyen",
-    gender: "FEMALE",
+    name: "HN - Anh Dũng",
+    code: "anhdung",
+    description: "",
+    gender: "MALE",
     type: "PREMIUM",
+    is_premium: true,
+    avatar: "https://i.pravatar.cc/150?img=0",
+    sample_audio: "/public/voice/anhdung.wav",
+    category: {
+      id: 3,
+      name: "Postcast",
+      code: "POSTCAST",
+    },
     language: {
       id: 1,
       name: "Tiếng Việt",
@@ -41,12 +50,11 @@ export default function Page() {
 
   const handleVoiceSelect = (voice: Actor) => {
     setSelectedVoice(voice);
-    console.log(voice);
     onClose();
   };
 
   const dispatch = useDispatch<any>();
-  const { tts, ttsPending,history } = VoiceHistoryAction
+  const { tts, ttsPending, history } = VoiceHistoryAction
   const [text, setText] = useState("")
   const [isFocused, setIsFocused] = useState(false);
 
@@ -64,7 +72,6 @@ export default function Page() {
       code: selectedVoice.code || "",
       actor: selectedVoice,
     }
-    console.log(params);
     dispatch(ttsPending(params))
     dispatch(tts(omit(params, 'actor')))
   }
@@ -220,8 +227,8 @@ export default function Page() {
             <div className="flex flex-col gap-4 bg-white h-[350px] -mx-3 p-2">
               <div className="overflow-x-auto">
                 <div className="min-w-[800px]">
-                  <VoiceHistoryList 
-                  rowsPerPage={5}
+                  <VoiceHistoryList
+                    rowsPerPage={5}
                     searchContent={search}
                     key={search}
                   />

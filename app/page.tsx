@@ -4,19 +4,21 @@ import { Button, Card, CardBody } from "@nextui-org/react"
 import { ArrowRight, Mic2, Headphones, CheckCircle, Play, Heart, Sparkles, Video } from 'lucide-react'
 import Navbar from "@/components/Navbar"
 import { useState, useCallback } from 'react'
-import LoginDialog from '@/components/LoginDialog'
-import RegisterDialog from '@/components/RegisterDialog'
 import { useDispatch } from "react-redux"
+import dynamic from 'next/dynamic'
 import { AuthenticateAction } from "./redux/slices/auth.slice"
 import { auth_register_params_dto } from "./api/auth.api"
-import Lottie from "lottie-react"
 import s1Animation from '../public/animationes/s1.json'
 import s2Animation from '../public/animationes/s2.json'
 import s3Animation from '../public/animationes/s3.json'
 import s4Animation from '../public/animationes/s4.json'
 import Image from "next/image"
-import VoiceSelectionModal from "./components/VoiceSelectionModal"
 
+// Dynamically import components that might use document
+const LoginDialog = dynamic(() => import('@/components/LoginDialog'), { ssr: false })
+const RegisterDialog = dynamic(() => import('@/components/RegisterDialog'), { ssr: false })
+const VoiceSelectionModal = dynamic(() => import('./components/VoiceSelectionModal'), { ssr: false })
+const Lottie = dynamic(() => import('lottie-react'), { ssr: false })
 export default function HomePage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showLoginDialog, setShowLoginDialog] = useState(false)

@@ -68,7 +68,7 @@ export default function Navbar() {
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
                         <Link href="/text-to-speech" prefetch className="flex items-center gap-2">
-                            <AudioWaveform width={32} height={32} className="text-primary"/>
+                            <AudioWaveform width={32} height={32} className="text-primary" />
                             <span className="font-bold text-primary">AIVoice</span>
                         </Link>
 
@@ -101,7 +101,7 @@ export default function Navbar() {
                                 <Image src="/images/vi-flag.png" alt="Vietnamese" width={20} height={20} />
                                 <span>VI</span>
                             </div>
-                           
+
                             <Button color="warning" onClick={handleTryFreeClick}>
                                 Dùng thử miễn phí
                             </Button>

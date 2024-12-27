@@ -91,10 +91,7 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
                                 width={40}
                                 height={40}
                                 className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.src = '/default-avatar.png';
-                                }}
+                                
                             />
                         </div>
                         <p className="text-bold text-sm">{item.voice?.name}</p>

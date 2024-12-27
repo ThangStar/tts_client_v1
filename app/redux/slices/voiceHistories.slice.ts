@@ -1,6 +1,7 @@
 import { history_list_params_dto, history_list_response_dto, tts_params_dto, tts_response_dto, TTSApi } from "@/app/api/tts.api";
 import { Actor } from "@/app/types/actor.type";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import toast from "react-hot-toast";
 
 const action = {
     tts: createAsyncThunk('voice/fetchTTS', async (voice: tts_params_dto, thunkAPI) => {
@@ -8,6 +9,7 @@ const action = {
             const res = await TTSApi.tts(voice);
             return thunkAPI.fulfillWithValue(res)
         } catch (error) {
+            toast.error("Máy chủ đang bận, vui lòng thử lại sau")
             return thunkAPI.rejectWithValue(error)
         }
     }),

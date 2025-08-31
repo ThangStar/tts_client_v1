@@ -9,11 +9,10 @@ type LoginInput = {
   email: string
   password: string
 }
-export default function LoginDialog({ isOpen, onClose, onLogin, onSwitchToRegister }: {
+export default function LoginDialog({ isOpen, onClose, onLogin }: {
   isOpen: boolean
   onClose: () => void
   onLogin: (email: string, password: string) => void
-  onSwitchToRegister: () => void
 }) {
 
   const { register, handleSubmit, formState: { errors }} = useForm<LoginInput>()
@@ -78,13 +77,6 @@ export default function LoginDialog({ isOpen, onClose, onLogin, onSwitchToRegist
 
             <p className="text-center text-default-500">
               Chưa có tài khoản? {" "}
-              <Button
-                variant="light"
-                className="text-primary p-0"
-                onClick={onSwitchToRegister}
-              >
-                Đăng ký ngay
-              </Button>
             </p>
           </div>
         </ModalBody>

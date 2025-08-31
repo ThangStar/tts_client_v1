@@ -34,10 +34,6 @@ export default function HomePage() {
     window.location.href = '/text-to-speech'
   }, [])
 
-  const switchToRegister = useCallback(() => {
-    setShowLoginDialog(false)
-    setShowRegisterDialog(true)
-  }, [])
 
   const switchToLogin = useCallback(() => {
     setShowRegisterDialog(false)
@@ -77,16 +73,7 @@ export default function HomePage() {
             <div className="flex items-center justify-center gap-2 text-default-600">
               <Sparkles className="w-5 h-5 text-yellow-600" />
               <p className="text-sm md:text-base">
-                🎁 <span className="font-semibold">Ưu đãi đặc biệt:</span> Nhận ngay 10 lượt dùng thử miễn phí khi đăng ký tài khoản mới!
-                <Button
-                  className="ml-3 text-sm"
-                  color="warning"
-                  variant="flat"
-                  size="sm"
-                  onClick={() => setShowRegisterDialog(true)}
-                >
-                  Đăng ký ngay
-                </Button>
+                🎁 <span className="font-semibold">Đặc biệt:</span> Nhập key <b>FTRIAL10K</b> để nhận ngay 10k ký tự dùng thử miễn phí!
               </p>
             </div>
           </div>
@@ -410,7 +397,6 @@ export default function HomePage() {
         isOpen={showLoginDialog}
         onClose={() => setShowLoginDialog(false)}
         onLogin={handleLogin}
-        onSwitchToRegister={switchToRegister}
       />
 
       <RegisterDialog

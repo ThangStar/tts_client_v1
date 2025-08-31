@@ -36,10 +36,6 @@ export default function Navbar() {
         router.push('/text-to-speech')
     }, [router])
 
-    const switchToRegister = useCallback(() => {
-        setShowLoginDialog(false)
-        setShowRegisterDialog(true)
-    }, [])
 
     const switchToLogin = useCallback(() => {
         setShowRegisterDialog(false)
@@ -67,7 +63,7 @@ export default function Navbar() {
             <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 shadow-sm">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
-                        <Link href="/text-to-speech" prefetch className="flex items-center gap-2">
+                        <Link href="/" prefetch className="flex items-center gap-2">
                             <AudioWaveform width={32} height={32} className="text-primary" />
                             <span className="font-bold text-primary">AIVoice</span>
                         </Link>
@@ -114,7 +110,6 @@ export default function Navbar() {
                 isOpen={showLoginDialog}
                 onClose={() => setShowLoginDialog(false)}
                 onLogin={handleLogin}
-                onSwitchToRegister={switchToRegister}
             />
 
             <RegisterDialog

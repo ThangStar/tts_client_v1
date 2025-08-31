@@ -6,7 +6,7 @@ const nextConfig = {
         domains: ['api.vietqr.io', 'i.pravatar.cc']
     },
     compiler:{
-        // removeConsole: true
+        removeConsole: true
     },
     webpack: (config) => {
         config.resolve.fallback = {

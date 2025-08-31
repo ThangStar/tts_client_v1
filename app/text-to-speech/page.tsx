@@ -11,7 +11,7 @@ import {
   useDisclosure,
   Checkbox,
 } from "@nextui-org/react"
-import { Search, Clock, ChevronDown } from 'lucide-react'
+import { Clock, ChevronDown } from 'lucide-react'
 import React, { useEffect, useState } from "react"
 import VoiceSelectionModal from '../components/VoiceSelectionModal'
 import { useDispatch } from "react-redux"
@@ -19,8 +19,6 @@ import VoiceHistoryList from "../components/VoiceHistoryList"
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice"
 import toast from "react-hot-toast"
 import { Actor } from "../types/actor.type"
-import { tts_params_dto } from "../api/tts.api"
-import { omit } from "lodash"
 import { KEY_LOCAL } from "@/constants/constants"
 
 export default function Page() {
@@ -55,7 +53,7 @@ export default function Page() {
   };
 
   const dispatch = useDispatch<any>();
-  const { tts, ttsPending, history, verifyKey } = VoiceHistoryAction
+  const { tts, verifyKey } = VoiceHistoryAction
   const [text, setText] = useState("")
   const [isFocused, setIsFocused] = useState(false);
 
@@ -74,7 +72,6 @@ export default function Page() {
       toast.error(error)
       return
     }
-    // dispatch(ttsPending(params))
     dispatch(tts({
       content: text
     }))
@@ -93,14 +90,7 @@ export default function Page() {
     }
     return null;
   }
-  const [search, setSearch] = useState("")
-  // const handleSearch = (e: any) => {
-  //   setSearch(e.target.value)
-  //   dispatch(history({
-  //     page: 1,
-  //     key: key
-  //   }))
-  // }
+
   const [key, setKey] = useState("")
 
   useEffect(() => {
@@ -112,7 +102,7 @@ export default function Page() {
   }, [])
 
   const [isVerify, setIsVerify] = useState(false)
-  const handleVerifyKey = async (e: any) => {
+  const handleVerifyKey = async () => {
     if(key.trim() === "") {
       toast.error("Vui lòng nhập key")
       return
@@ -266,20 +256,6 @@ export default function Page() {
                 Danh sách yêu cầu
               </Button>
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 w-full lg:w-auto">
-                {/* <Input
-                  placeholder="Tìm kiếm theo nội dung"
-                  startContent={<Search className="text-default-400 w-4 h-4" />}
-                  size="sm"
-                  value={search}
-                  className="w-full lg:w-64"
-                  variant="bordered"
-                  classNames={{
-                    input: "focus:border-primary",
-                    innerWrapper: "focus-within:border-primary",
-                    inputWrapper: "hover:border-primary-300 focus-within:border-primary"
-                  }}
-                  onChange={handleSearch}
-                /> */}
                 <Button variant="flat" className="bg-white shadow-sm hover:shadow" endContent={<ChevronDown className="w-4 h-4" />}>
                   Trạng thái
                 </Button>
@@ -313,9 +289,6 @@ export default function Page() {
               <div className="overflow-x-auto">
                 <div className="min-w-[800px]">
                   <VoiceHistoryList
-                    rowsPerPage={5}
-                    searchContent={search}
-                    key={search}
                   />
                 </div>
               </div>

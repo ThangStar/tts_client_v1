@@ -1,6 +1,5 @@
 import axios, {
   AxiosError,
-  HttpStatusCode,
   type AxiosInstance,
 } from "axios";
 class Http {

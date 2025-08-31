@@ -1,12 +1,11 @@
 import { Table, Chip, Button, TableColumn, TableRow, TableCell, TableBody, TableHeader, Pagination, Spinner } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { CheckCircle2, Clock, Download, Trash2, Play, Pause } from 'lucide-react';
-import { history_list_response_dto, tts_dto, tts_response_dto } from "../api/tts.api";
+import { CheckCircle2, Clock, Download,  Play, Pause } from 'lucide-react';
+import { history_list_response_dto, tts_dto} from "../api/tts.api";
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice";
-import Image from "next/image";
 
-export default function VoiceHistoryList({ searchContent }: { searchContent: string, rowsPerPage: number }) {
+export default function VoiceHistoryList() {
     const voiceHistories: history_list_response_dto = useSelector((state: { voiceHistories: any }) => state.voiceHistories.value.voiceHistories);
     const [currentPage, setCurrentPage] = useState(1);
     const [playingId, setPlayingId] = useState<string | null>(null);
@@ -229,10 +228,10 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
     const pages = voiceHistories.pagination?.pages;
     const items = voiceHistories.items;
     
-    // Reset currentPage về 1 khi searchContent thay đổi
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchContent]);
+    // // Reset currentPage về 1 khi searchContent thay đổi
+    // useEffect(() => {
+    //     setCurrentPage(1);
+    // }, [searchContent]);
 
     // Fetch data khi currentPage hoặc searchContent thay đổi
     useEffect(() => {
@@ -248,7 +247,7 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
         };
         
         fetchData();
-    }, [currentPage, searchContent, dispatch]);
+    }, [currentPage, dispatch]);
 
     return (
         <div className="flex flex-col h-[600px]">

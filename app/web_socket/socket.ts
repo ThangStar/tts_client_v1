@@ -1,4 +1,4 @@
-import io, { Socket } from 'socket.io-client';
+import io from 'socket.io-client';
 
 class SocketManager {
     private socket: any = null;

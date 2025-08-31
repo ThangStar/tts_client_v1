@@ -1,14 +1,11 @@
 'use client'
 
 import { Button } from "@nextui-org/react"
-import { Menu, X, History, Mic2, Crown, CreditCard, FolderOpenDot, LogOut } from 'lucide-react'
+import { Menu, X, History, Mic2, Crown, FolderOpenDot } from 'lucide-react'
 import { useState, MouseEvent } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useSelector } from "react-redux"
-import { AuthenticateState } from "../redux/slices/auth.slice"
-import Image from "next/image"
-import { HistoryState } from "next/dist/shared/lib/router/router"
 import { VoiceState } from "../redux/slices/voiceHistories.slice"
 
 export default function Sidebar() {
@@ -16,9 +13,9 @@ export default function Sidebar() {
     const pathname = usePathname()
     const router = useRouter()
 
-    const { user }: AuthenticateState = useSelector((state: any) => {
-        return state.authenticate.value
-    })
+    // const { user }: AuthenticateState = useSelector((state: any) => {
+    //     return state.authenticate.value
+    // })
 
     const { keyState }: VoiceState = useSelector((state: any) => {
         return state.voiceHistories.value
@@ -46,10 +43,10 @@ export default function Sidebar() {
         router.push(href)
     }
 
-    const handleLogout = () => {
-        document.cookie = "jwt_voice=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        window.location.href = '/';
-    }
+    // const handleLogout = () => {
+    //     document.cookie = "jwt_voice=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    //     window.location.href = '/';
+    // }
 
     return (
         <>

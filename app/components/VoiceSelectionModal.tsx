@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   Modal,
   ModalContent,
@@ -16,8 +16,7 @@ import {
   Chip
 } from "@nextui-org/react"
 import { Search, Settings, Filter, Play, Pause } from 'lucide-react'
-import { useDispatch, useSelector } from "react-redux"
-import { ActorAction } from "../redux/slices/actor.slice"
+import { useSelector } from "react-redux"
 import { Actor, ActorGender, ActorLanguage, ActorType } from "../types/actor.type"
 import { voice_list_response_dto } from "../api/tts.api"
 
@@ -55,20 +54,18 @@ export default function VoiceSelectionModal({
   const [playingId, setPlayingId] = useState<number | null>(null)
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null)
 
-  const dispatch = useDispatch<any>()
   const { actors: { items, meta } }: { actors: voice_list_response_dto } = useSelector((state: any) => state.actor.value)
-  const actorAction = ActorAction
-  useEffect(() => {
-    dispatch(actorAction.listActor({
-      search: searchQuery,
-      limit: 5,
-      page: page,
-      category_code: filters.category_code,
-      language_code: filters.languageCode.join(','),
-      type: convertTypeToNumber(filters.type),
-      gender: convertGenderToNumber(filters.gender),
-    }))
-  }, [searchQuery, page, filters, dispatch, actorAction])
+  // useEffect(() => {
+  //   dispatch(actorAction.listActor({
+  //     search: searchQuery,
+  //     limit: 5,
+  //     page: page,
+  //     category_code: filters.category_code,
+  //     language_code: filters.languageCode.join(','),
+  //     type: convertTypeToNumber(filters.type),
+  //     gender: convertGenderToNumber(filters.gender),
+  //   }))
+  // }, [searchQuery, page, filters, dispatch, actorAction])
 
   // Reset filters
   const resetFilters = () => {
@@ -83,15 +80,15 @@ export default function VoiceSelectionModal({
   }
 
   // Thêm helper function để convert giá trị
-  const convertTypeToNumber = (types: string[]): number | undefined => {
-    if (types.length === 0 || types.length === 2) return undefined
-    return types.includes(ActorType.STANDARD) ? 0 : 1
-  }
+  // const convertTypeToNumber = (types: string[]): number | undefined => {
+  //   if (types.length === 0 || types.length === 2) return undefined
+  //   return types.includes(ActorType.STANDARD) ? 0 : 1
+  // }
 
-  const convertGenderToNumber = (genders: string[]): number | undefined => {
-    if (genders.length === 0 || genders.length === 2) return undefined
-    return genders.includes(ActorGender.MALE) ? 1 : 0
-  }
+  // const convertGenderToNumber = (genders: string[]): number | undefined => {
+  //   if (genders.length === 0 || genders.length === 2) return undefined
+  //   return genders.includes(ActorGender.MALE) ? 1 : 0
+  // }
 
   // Sửa lại các hàm handle change để đảm bảo luôn có ít nhất 1 giá trị được chọn
   const handleGenderChange = (values: string[]) => {

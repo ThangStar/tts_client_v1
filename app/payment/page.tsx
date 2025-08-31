@@ -1,10 +1,9 @@
 'use client'
 
 import { Button, Radio, RadioGroup } from "@nextui-org/react"
-import { ArrowLeft, ChevronDown } from "lucide-react"
-import Image from "next/image"
+import { ArrowLeft} from "lucide-react"
 import Link from "next/link"
-import { useState, Suspense, useEffect } from "react"
+import { useState, Suspense} from "react"
 import BankTransferDialog from "../components/payment/BankTransferDialog"
 import { useSearchParams } from "next/navigation"
 import { formatVND } from "@/lib/utils"
@@ -20,55 +19,55 @@ const paymentMethods = [
     }
 ]
 
-const plans = [
-    {
-        name: "Tiêu chuẩn",
-        price: 199000,
-        period: "month",
-        type: 2,
-        features: [
-            { text: "Số lượng ký tự 300.000", enabled: true },
-            { text: "Ngôn ngữ Tiếng Việt", enabled: true },
-            { text: "Nghe thử 500 ký tự / lần", enabled: true },
-            { text: "Ký tự tối đa / chuyển đổi 20.000", enabled: true },
-            { text: "Lượt tải xuống Không giới hạn", enabled: true },
-        ],
-        buttonText: "Chọn gói",
-        popular: false,
-    },
-    {
-        name: "Chuyên nghiệp",
-        price: 399000,
-        period: "month",
-        type: 3,
-        features: [
-            { text: "Số lượng ký tự 600.000", enabled: true },
-            { text: "Ngôn ngữ Tiếng Việt & Tiếng nước ngoài", enabled: true },
-            { text: "Nghe thử 1.000 ký tự / lần", enabled: true },
-            { text: "Ký tự tối đa / chuyển đổi 50.000", enabled: true },
-            { text: "Lượt tải xuống Không giới hạn", enabled: true },
-            { text: "Số thiết bị đồng thời 3 thiết bị", enabled: true },
-        ],
-        buttonText: "MUA NGAY",
-        popular: true,
-    },
-    {
-        name: "Đặc biệt",
-        price: 799000,
-        period: "month",
-        type: 4,
-        features: [
-            { text: "Số lượng ký tự 1.300.000", enabled: true },
-            { text: "Ngôn ngữ Tiếng Việt & Tiếng nước ngoài", enabled: true },
-            { text: "Nghe thử 1.500 ký tự / lần", enabled: true },
-            { text: "Ký tự tối đa / chuyển đổi 100.000", enabled: true },
-            { text: "Lượt tải xuống Không giới hạn", enabled: true },
-            { text: "Số thiết bị đồng thời 5 thiết bị", enabled: true },
-        ],
-        buttonText: "Chọn gói",
-        popular: false,
-    },
-];
+// const plans = [
+//     {
+//         name: "Tiêu chuẩn",
+//         price: 199000,
+//         period: "month",
+//         type: 2,
+//         features: [
+//             { text: "Số lượng ký tự 300.000", enabled: true },
+//             { text: "Ngôn ngữ Tiếng Việt", enabled: true },
+//             { text: "Nghe thử 500 ký tự / lần", enabled: true },
+//             { text: "Ký tự tối đa / chuyển đổi 20.000", enabled: true },
+//             { text: "Lượt tải xuống Không giới hạn", enabled: true },
+//         ],
+//         buttonText: "Chọn gói",
+//         popular: false,
+//     },
+//     {
+//         name: "Chuyên nghiệp",
+//         price: 399000,
+//         period: "month",
+//         type: 3,
+//         features: [
+//             { text: "Số lượng ký tự 600.000", enabled: true },
+//             { text: "Ngôn ngữ Tiếng Việt & Tiếng nước ngoài", enabled: true },
+//             { text: "Nghe thử 1.000 ký tự / lần", enabled: true },
+//             { text: "Ký tự tối đa / chuyển đổi 50.000", enabled: true },
+//             { text: "Lượt tải xuống Không giới hạn", enabled: true },
+//             { text: "Số thiết bị đồng thời 3 thiết bị", enabled: true },
+//         ],
+//         buttonText: "MUA NGAY",
+//         popular: true,
+//     },
+//     {
+//         name: "Đặc biệt",
+//         price: 799000,
+//         period: "month",
+//         type: 4,
+//         features: [
+//             { text: "Số lượng ký tự 1.300.000", enabled: true },
+//             { text: "Ngôn ngữ Tiếng Việt & Tiếng nước ngoài", enabled: true },
+//             { text: "Nghe thử 1.500 ký tự / lần", enabled: true },
+//             { text: "Ký tự tối đa / chuyển đổi 100.000", enabled: true },
+//             { text: "Lượt tải xuống Không giới hạn", enabled: true },
+//             { text: "Số thiết bị đồng thời 5 thiết bị", enabled: true },
+//         ],
+//         buttonText: "Chọn gói",
+//         popular: false,
+//     },
+// ];
 
 const data_price = [
     {
@@ -89,7 +88,6 @@ const data_price = [
 ]
 function PaymentPageContent() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false) // Dialog thành công
     const searchParams = useSearchParams()
     const period = searchParams.get('period')
@@ -112,12 +110,10 @@ function PaymentPageContent() {
 
     // Xử lý khi nhấn "Tôi đã chuyển khoản"
     const handlePaymentConfirm = () => {
-        setIsSubmitting(true);
 
         // Giả lập loading 2s
         setTimeout(() => {
             setIsDialogOpen(false); // Đóng dialog thanh toán
-            setIsSubmitting(false); // Tắt loading
             setIsSuccessDialogOpen(true); // Mở dialog thành công
         }, 2000);
     };

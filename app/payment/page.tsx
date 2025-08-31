@@ -4,7 +4,7 @@ import { Button, Radio, RadioGroup } from "@nextui-org/react"
 import { ArrowLeft, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useState, Suspense } from "react"
+import { useState, Suspense, useEffect } from "react"
 import BankTransferDialog from "../components/payment/BankTransferDialog"
 import { useSearchParams } from "next/navigation"
 import { formatVND } from "@/lib/utils"
@@ -13,7 +13,7 @@ import { useSelector } from "react-redux"
 const paymentMethods = [
     {
         id: "qrcode",
-        name: "QR CODE",
+        name: "Chuyển khoản ngân hàng (QR)",
         highlighted: true,
         selected: true,
         logo: "/images/vietqr.png",
@@ -70,16 +70,58 @@ const plans = [
     },
 ];
 
+const data_price = [
+    {
+        type: 2,
+        price: 90000,
+        name: "Tiêu chuẩn",
+    },
+    {
+        type: 3,
+        price: 350000,
+        name: "Chuyên nghiệp",
+    },
+    {
+        type: 4,
+        price: 750000,
+        name: "Đặc biệt",
+    }
+]
 function PaymentPageContent() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false) // Dialog thành công
     const searchParams = useSearchParams()
     const period = searchParams.get('period')
     const type = searchParams.get('type')
-    const data = plans.find(plan => plan.period === period && plan.type === Number(type))
+    const data = type == "2" ? data_price[0] : type == "3" ? data_price[1] : data_price[2]
     const defaultPaymentMethod = paymentMethods.find(method => method.selected)?.id || paymentMethods[0].id
     const user = useSelector((state: any) => state.authenticate.value.user)
-    // console.log(user);
-    
+
+    // Hàm tạo key ngẫu nhiên
+    const generateRandomKey = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < 8; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    };
+
+    const [keyBuy, setKeyBuy] = useState(generateRandomKey())
+
+    // Xử lý khi nhấn "Tôi đã chuyển khoản"
+    const handlePaymentConfirm = () => {
+        setIsSubmitting(true);
+
+        // Giả lập loading 2s
+        setTimeout(() => {
+            setIsDialogOpen(false); // Đóng dialog thanh toán
+            setIsSubmitting(false); // Tắt loading
+            setIsSuccessDialogOpen(true); // Mở dialog thành công
+        }, 2000);
+    };
+
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
             <div className="flex items-center gap-2 mb-6">
@@ -104,7 +146,7 @@ function PaymentPageContent() {
                             defaultValue="standard"
                             orientation="horizontal"
                         >
-                            <Radio value="standard">Tiêu chuẩn</Radio>
+                            <Radio value="standard">{data.name}</Radio>
                         </RadioGroup>
                     </div>
 
@@ -122,14 +164,6 @@ function PaymentPageContent() {
                             >
                                 <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-16 h-8 relative">
-                                            <Image
-                                                src={method.logo}
-                                                alt={method.name}
-                                                fill
-                                                className="object-contain"
-                                            />
-                                        </div>
                                         <span className="font-medium">{method.name}</span>
                                     </div>
                                 </div>
@@ -156,19 +190,25 @@ function PaymentPageContent() {
                                 <span>Giá gói</span>
                                 <span>{formatVND(data?.price || 0)}</span>
                             </div>
-                        </div>
 
-                        <div>
-                            <Button
-                                endContent={<ChevronDown className="w-4 h-4" />}
-                                variant="light"
-                                className="w-full justify-between"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xl">🎁</span>
-                                    <span>Thêm mã khuyến mãi</span>
+                            <div className="pt-3 border-t border-default-200">
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-sm text-default-600">Mã đơn hàng</label>
+                                    <Button
+                                        size="sm"
+                                        variant="light"
+                                        onClick={() => setKeyBuy(generateRandomKey())}
+                                        className="text-xs"
+                                    >
+                                        Tạo mới
+                                    </Button>
                                 </div>
-                            </Button>
+                                <div className="bg-white p-3 rounded-lg border border-default-200">
+                                    <code className="text-lg font-mono font-bold text-primary">
+                                        {keyBuy}
+                                    </code>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex justify-between font-medium text-lg pt-4 border-t">
@@ -186,15 +226,6 @@ function PaymentPageContent() {
                         Đồng ý thanh toán
                     </Button>
 
-                    <BankTransferDialog
-                        accountName={"USR12P" + period + "T" + type || "BUY"}
-                        addInfo={data?.name || "BUY"}
-                        isOpen={isDialogOpen}
-                        onClose={() => setIsDialogOpen(false)}
-                        amount={data?.price || 0}
-                        orderId="VB115313"
-                    />
-
                     <p className="text-sm text-default-500">
                         Bằng việc đồng ý thanh toán, Quý Khách hàng xác nhận đã đọc, hiểu và đồng ý với{" "}
                         <Link href="/terms" className="text-primary">
@@ -204,6 +235,40 @@ function PaymentPageContent() {
                     </p>
                 </div>
             </div>
+
+            {/* Dialog Chuyển khoản */}
+            <BankTransferDialog
+                accountName={"USR12P" + period + "T" + type || "BUY"}
+                addInfo={data?.name || "BUY"}
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                amount={data?.price || 0}
+                orderId={keyBuy}
+                onConfirmPayment={handlePaymentConfirm} // Truyền hàm xử lý vào dialog
+            />
+
+            {/* Dialog Thành công */}
+            {isSuccessDialogOpen && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-2xl shadow-lg max-w-sm w-full mx-4">
+                        <h3 className="text-lg font-semibold mb-4">🕓 Giao dịch đang được xử lý!</h3>
+                        <p className="text-sm text-default-600 mb-4">
+                            Key của bạn là: <strong>{keyBuy}
+                                </strong>. <br/>Sẽ được cộng ký tự sau khi xử lý xong.
+                        </p>
+                        <p className="text-sm text-default-600 mb-4">
+                            Nhớ lưu key vào nhé!
+                        </p>
+                        <Button
+                            color="primary"
+                            className="w-full"
+                            onClick={() => setIsSuccessDialogOpen(false)}
+                        >
+                            Đóng
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

@@ -8,6 +8,8 @@ import { usePathname, useRouter } from "next/navigation"
 import { useSelector } from "react-redux"
 import { AuthenticateState } from "../redux/slices/auth.slice"
 import Image from "next/image"
+import { HistoryState } from "next/dist/shared/lib/router/router"
+import { VoiceState } from "../redux/slices/voiceHistories.slice"
 
 export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(false)
@@ -18,13 +20,17 @@ export default function Sidebar() {
         return state.authenticate.value
     })
 
+    const { keyState }: VoiceState = useSelector((state: any) => {
+        return state.voiceHistories.value
+    })
+
     const menuItems = [
         {
             group: "Menu",
             items: [
                 { icon: <History className="w-4 h-4" />, label: "Lịch sử", href: "/history", isPro: false },
                 { icon: <Mic2 className="w-4 h-4" />, label: "AIVoice API", href: "/api-endpoint", isPro: false },
-                { icon: <CreditCard className="w-4 h-4" />, label: "Thanh toán", href: "/payment/history", isPro: false },
+                // { icon: <CreditCard className="w-4 h-4" />, label: "Thanh toán", href: "/payment/history", isPro: false },
             ]
         }
     ]
@@ -117,7 +123,7 @@ export default function Sidebar() {
                     <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-warning/10">
                         <div className="flex items-center gap-2 mb-2">
                             <Crown className="w-4 h-4 text-warning" />
-                            <p className="text-base font-semibold text-warning">Nâng cấp VIP</p>
+                            <p className="text-base font-semibold text-warning">Mua Thêm Ký Tự</p>
                         </div>
                         <p className="text-xs text-default-600 mb-3">
                             Nâng cấp tài khoản để có thêm nhiều tính năng hơn
@@ -126,7 +132,7 @@ export default function Sidebar() {
                             <Button
                                 className="w-full bg-warning text-white font-medium h-9 text-sm"
                             >
-                                Mua gói cước
+                                Bảng giá
                             </Button>
                         </Link>
                     </div>
@@ -136,20 +142,16 @@ export default function Sidebar() {
                 <div className="px-4 mb-4">
                     <div className="p-3 rounded-lg bg-default-50">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-xs text-default-600">Số lượt còn lại:</p>
-                            <p className="text-sm font-medium">1,234 / 5,000</p>
+                            <p className="text-xs text-default-600">Số ký tự còn lại:</p>
                         </div>
-                        <div className="w-full h-1 bg-default-200 rounded-full overflow-hidden">
-                            <div
-                                className="h-full bg-primary rounded-full transition-all duration-300"
-                                style={{ width: `${(1234 / 5000) * 100}%` }}
-                            />
-                        </div>
+                        <p className="text-sm font-bold">
+                            {keyState.remaining_chars?.toLocaleString('vi-VN') || '0'} ký tự
+                        </p>
                     </div>
                 </div>
 
                 {/* Bottom Section */}
-                <div className="absolute bottom-0 lg:bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent">
+                {/* <div className="absolute bottom-0 lg:bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-white via-white to-transparent">
                     <div className="flex items-center justify-between p-4 rounded-xl bg-default-100">
                         <div className="flex items-center gap-3">
                             <Image 
@@ -173,7 +175,7 @@ export default function Sidebar() {
                             <LogOut className="w-4 h-4" />
                         </Button>
                     </div>
-                </div>
+                </div> */}
             </div>
 
             {/* Overlay */}

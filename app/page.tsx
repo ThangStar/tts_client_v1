@@ -26,11 +26,11 @@ export default function HomePage() {
   const [showVoiceModal, setShowVoiceModal] = useState(false)
 
   const handleActionClick = useCallback(() => {
-    const token = localStorage.getItem('token_aivoice')
-    if (!token) {
-      setShowLoginDialog(true)
-      return
-    }
+    // const token = localStorage.getItem('token_aivoice')
+    // if (!token) {
+    //   setShowLoginDialog(true)
+    //   return
+    // }
     window.location.href = '/text-to-speech'
   }, [])
 

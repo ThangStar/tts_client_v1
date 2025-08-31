@@ -1,0 +1,1 @@
+export const KEY_LOCAL = "key_vivoice"

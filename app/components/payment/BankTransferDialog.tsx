@@ -10,10 +10,11 @@ interface BankTransferDialogProps {
     orderId: string
     accountName: string
     addInfo: string
+    onConfirmPayment: ()=>void
 }
 
 
-export default function BankTransferDialog({ isOpen, onClose, amount, orderId }: BankTransferDialogProps) {
+export default function BankTransferDialog({ isOpen, onClose, amount, orderId, onConfirmPayment}: BankTransferDialogProps) {
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text)
     }
@@ -49,7 +50,7 @@ export default function BankTransferDialog({ isOpen, onClose, amount, orderId }:
                     <div className="flex justify-center mb-4">
                         <div className="relative w-48 h-48">
                             <Image
-                                src={`https://api.vietqr.io/image/970416-14929061-MSvzHbf.jpg?accountName=NONG%20VAN%20THANG&amount=${amount}&addInfo=USR101T2`}
+                                src={`/images/qr.jpg`}
                                 alt="QR Code"
                                 fill
                                 className="object-contain"
@@ -138,6 +139,7 @@ export default function BankTransferDialog({ isOpen, onClose, amount, orderId }:
                         Hủy thanh toán
                     </Button>
                     <Button
+                    onClick={onConfirmPayment}
                         color="primary"
                         target="_blank"
                     >

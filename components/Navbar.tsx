@@ -28,11 +28,11 @@ export default function Navbar() {
     }, [redirectTo, router])
 
     const handleTryFreeClick = useCallback(() => {
-        const token = localStorage.getItem('token_aivoice')
-        if (!token) {
-            setShowLoginDialog(true)
-            return
-        }
+        // const token = localStorage.getItem('token_aivoice')
+        // if (!token) {
+        //     setShowLoginDialog(true)
+        //     return
+        // }
         router.push('/text-to-speech')
     }, [router])
 

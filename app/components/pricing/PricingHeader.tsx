@@ -18,9 +18,8 @@ export default function PricingHeader() {
             tab: "h-10",
           }}
         >
-          <Tab key="month" title="Theo tháng" />
-          <Tab key="quarter" title="Theo quý" />
-          <Tab
+          <Tab key="month" title="VĨNH VIỄN" />
+          {/* <Tab
             key="year"
             title={
               <div className="flex items-center gap-2">
@@ -28,7 +27,7 @@ export default function PricingHeader() {
                 <span className="bg-primary/10 text-xs px-2 py-1 rounded">GIẢM 20%</span>
               </div>
             }
-          />
+          /> */}
         </Tabs>
 
       </div>

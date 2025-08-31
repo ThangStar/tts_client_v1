@@ -1,15 +1,16 @@
-import { Table, Chip, Button, TableColumn, TableRow, TableCell, TableBody, TableHeader, Pagination } from "@nextui-org/react";
+import { Table, Chip, Button, TableColumn, TableRow, TableCell, TableBody, TableHeader, Pagination, Spinner } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckCircle2, Clock, Download, Trash2, Play, Pause } from 'lucide-react';
-import { tts_response_dto } from "../api/tts.api";
+import { history_list_response_dto, tts_dto, tts_response_dto } from "../api/tts.api";
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice";
 import Image from "next/image";
 
 export default function VoiceHistoryList({ searchContent }: { searchContent: string, rowsPerPage: number }) {
-    const voiceHistories = useSelector((state: { voiceHistories: any }) => state.voiceHistories.value.voiceHistories);
+    const voiceHistories: history_list_response_dto = useSelector((state: { voiceHistories: any }) => state.voiceHistories.value.voiceHistories);
     const [currentPage, setCurrentPage] = useState(1);
     const [playingId, setPlayingId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const columns = [
@@ -49,14 +50,61 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
     };
 
     const handleDownload = async (url: string, filename?: string) => {
+        console.log("handle download..", url);
+        
+        if (!url) {
+            console.error('URL is empty');
+            return;
+        }
+
+        // Check if URL is relative and construct full URL if needed
+        let fullUrl = url;
+        if (url.startsWith('/') || !url.startsWith('http')) {
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+            fullUrl = `${baseUrl}${url.startsWith('/') ? url : `/${url}`}`;
+            console.log('Constructed full URL:', fullUrl);
+        }
+
         try {
-            // Fetch the audio file
-            const response = await fetch(url);
+
+            // Method 1: Try direct download first
+            try {
+                const link = document.createElement('a');
+                link.href = fullUrl;
+                link.download = filename || 'audio.mp3';
+                link.target = '_blank';
+                
+                // Append to body, click and remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log('Direct download attempted with URL:', fullUrl);
+                return;
+            } catch (directError) {
+                console.log('Direct download failed, trying fetch method:', directError);
+            }
+
+            // Method 2: Fetch and create blob (for CORS issues)
+            const response = await fetch(fullUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'audio/*',
+                },
+                mode: 'cors'
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const blob = await response.blob();
+            console.log('Blob created:', blob.size, 'bytes');
 
             // Create a temporary link element
             const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
+            const objectUrl = window.URL.createObjectURL(blob);
+            link.href = objectUrl;
 
             // Set the download filename
             link.download = filename || 'audio.mp3';
@@ -67,13 +115,23 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
             document.body.removeChild(link);
 
             // Clean up the URL object
-            window.URL.revokeObjectURL(link.href);
+            window.URL.revokeObjectURL(objectUrl);
+            
+            console.log('Download completed successfully');
         } catch (error) {
             console.error('Download failed:', error);
+            
+            // Fallback: Try to open in new tab
+            try {
+                window.open(fullUrl, '_blank');
+                console.log('Opened audio in new tab as fallback with URL:', fullUrl);
+            } catch (fallbackError) {
+                console.error('Fallback also failed:', fallbackError);
+            }
         }
     };
 
-    const renderCell = (item: tts_response_dto, columnKey: any, rowIndex: any) => {
+    const renderCell = (item: tts_dto, columnKey: any, rowIndex: any) => {
         switch (columnKey) {
             case "index":
                 return (
@@ -84,24 +142,14 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
             case "voice":
                 return (
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full overflow-hidden">
-                            <Image
-                                src={item.voice?.avatar || '/default-avatar.png'}
-                                alt="avatar"
-                                width={40}
-                                height={40}
-                                className="w-full h-full object-cover"
-                                
-                            />
-                        </div>
-                        <p className="text-bold text-sm">{item.voice?.name}</p>
+                        <p className="text-bold text-sm">HN - Ngọc Huyền</p>
                     </div>
                 );
             case "metadata":
                 return (
                     <div className="flex flex-col">
                         <p className="text-bold text-sm whitespace-pre-wrap text-ellipsis line-clamp-3 break-words">
-                            {item.metadata?.prompt.trim()}
+                            {item.content?.trim()}
                         </p>
                     </div>
                 );
@@ -124,29 +172,29 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
                 return (
                     <Chip
                         className="capitalize"
-                        color={item.progress ? "warning" : "success"}
+                        color={item.status != "done" ? "warning" : "success"}
                         size="sm"
                         variant="flat"
-                        startContent={item.progress ?
+                        startContent={item.status != "done" ?
                             <Clock className="w-3 h-3" /> :
                             <CheckCircle2 className="w-3 h-3" />
                         }
                     >
-                        {item.progress ? "Đang xử lý" : "Hoàn thành"}
+                        {item.status == "done" ? "Hoàn tất" : "Đang xử lý"}
                     </Chip>
                 );
             case "actions":
                 return (
                     <div className="flex items-center gap-2">
-                        {!item.progress && (
+                        {item.status != "processing" && (
                             <>
                                 <Button
                                     isIconOnly
                                     size="sm"
                                     variant="light"
-                                    onClick={() => handlePlay(item.url || '', item.id || "")}
+                                    onClick={() => handlePlay(item.url || '', `${item.id}` || "0")}
                                 >
-                                    {playingId === item.id ?
+                                    {playingId === `${item.id}` ?
                                         <Pause className="w-4 h-4" /> :
                                         <Play className="w-4 h-4" />
                                     }
@@ -155,33 +203,18 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
                                     isIconOnly
                                     size="sm"
                                     variant="light"
-                                    onClick={() => handleDownload(
-                                        item.url || '',
-                                        `audio_${item.id || new Date().getTime()}.mp3`
-                                    )}
+                                    onClick={() => {
+                                        console.log('Download button clicked for item:', item);
+                                        console.log('Item URL:', item.url);
+                                        handleDownload(
+                                            item.url || '',
+                                            `audio_${item.id || new Date().getTime()}.mp3`
+                                        );
+                                    }}
                                 >
                                     <Download className="w-4 h-4" />
                                 </Button>
-                                <Button
-                                    isIconOnly
-                                    size="sm"
-                                    variant="light"
-                                    onClick={() => console.log('Delete clicked')}
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </Button>
                             </>
-                        )}
-                        {item.progress && (
-                            <Button
-                                isIconOnly
-                                size="sm"
-                                variant="light"
-                                color="danger"
-                                onClick={() => console.log('Delete clicked')}
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </Button>
                         )}
                     </div>
                 );
@@ -192,69 +225,85 @@ export default function VoiceHistoryList({ searchContent }: { searchContent: str
 
     const dispatch = useDispatch<any>();
     const { history } = VoiceHistoryAction
-    useEffect(() => {
-        dispatch(history({
-            limit: 5,
-            page: currentPage,
-            search: searchContent
-        }));
-    }, [dispatch, history, currentPage, searchContent]);
 
-    const pages = voiceHistories.data.meta?.totalPages || 1;
-    console.log(voiceHistories.data.meta);
+    const pages = voiceHistories.pagination?.pages;
+    const items = voiceHistories.items;
     
-    const items = voiceHistories.data.items;
-
     // Reset currentPage về 1 khi searchContent thay đổi
     useEffect(() => {
         setCurrentPage(1);
     }, [searchContent]);
 
+    // Fetch data khi currentPage hoặc searchContent thay đổi
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                await dispatch(history({
+                    page: currentPage
+                }));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchData();
+    }, [currentPage, searchContent, dispatch]);
+
     return (
         <div className="flex flex-col h-[600px]">
-            <Table
-                aria-label="Voice History Table"
-                classNames={{
-                    wrapper: "flex-grow shadow-none",
-                    base: "overflow-hidden h-full",
-                    table: "min-w-full",
-                    th: "bg-transparent border-b border-divider sticky top-0 bg-white whitespace-nowrap",
-                    td: "border-none whitespace-nowrap",
-                    tr: "border-none hover:bg-gray-50",
-                    tbody: "overflow-y-auto",
-                }}
-            >
-                <TableHeader columns={columns}>
-                    {(column) => (
-                        <TableColumn
-                            key={column.uid}
-                            align={column.uid === "actions" ? "center" : "start"}
-                        >
-                            {column.name}
-                        </TableColumn>
-                    )}
-                </TableHeader>
-                <TableBody items={items}>
-                    {items.map((item: any, index: number) => (
-                        <TableRow key={index}>
-                            {(columnKey) => (
-                                <TableCell>{renderCell(item, columnKey, ((currentPage - 1) * 5) + index)}</TableCell>
+            {isLoading && (
+                <div className="flex items-center justify-center h-full">
+                    <Spinner label="Đang tải..." />
+                </div>
+            )}
+            {!isLoading && (
+                <>
+                    <Table
+                        aria-label="Voice History Table"
+                        classNames={{
+                            wrapper: "flex-grow shadow-none",
+                            base: "overflow-hidden h-full",
+                            table: "min-w-full",
+                            th: "bg-transparent border-b border-divider sticky top-0 bg-white whitespace-nowrap",
+                            td: "border-none whitespace-nowrap",
+                            tr: "border-none hover:bg-gray-50",
+                            tbody: "overflow-y-auto",
+                        }}
+                    >
+                        <TableHeader columns={columns}>
+                            {(column) => (
+                                <TableColumn
+                                    key={column.uid}
+                                    align={column.uid === "actions" ? "center" : "start"}
+                                >
+                                    {column.name}
+                                </TableColumn>
                             )}
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <div className="py-2 px-2 flex justify-center sticky bottom-0 bg-white">
-                <Pagination
-                    isCompact
-                    showControls
-                    showShadow
-                    color="primary"
-                    page={currentPage}
-                    total={pages}
-                    onChange={(page) => setCurrentPage(page)}
-                />
-            </div>
+                        </TableHeader>
+                        <TableBody items={items}>
+                            {(items || []).map((item: any, index: number) => (
+                                <TableRow key={index}>
+                                    {(columnKey) => (
+                                        <TableCell>{renderCell(item, columnKey, ((currentPage - 1) * 5) + index)}</TableCell>
+                                    )}
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                    <div className="py-2 px-2 flex justify-center sticky bottom-0 bg-white">
+                        <Pagination
+                            isCompact
+                            showControls
+                            showShadow
+                            color="primary"
+                            page={currentPage}
+                            total={pages || 1}
+                            onChange={(page) => setCurrentPage(page)}
+                        />
+                    </div>
+                </>
+            )}
         </div>
     );
 }; 

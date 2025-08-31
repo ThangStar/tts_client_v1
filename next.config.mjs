@@ -5,6 +5,9 @@ const nextConfig = {
     images: {
         domains: ['api.vietqr.io', 'i.pravatar.cc']
     },
+    compiler:{
+        // removeConsole: true
+    },
     webpack: (config) => {
         config.resolve.fallback = {
             fs: false,

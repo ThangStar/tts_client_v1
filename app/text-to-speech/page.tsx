@@ -12,7 +12,7 @@ import {
   Checkbox,
 } from "@nextui-org/react"
 import { Search, Clock, ChevronDown } from 'lucide-react'
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import VoiceSelectionModal from '../components/VoiceSelectionModal'
 import { useDispatch } from "react-redux"
 import VoiceHistoryList from "../components/VoiceHistoryList"
@@ -21,13 +21,14 @@ import toast from "react-hot-toast"
 import { Actor } from "../types/actor.type"
 import { tts_params_dto } from "../api/tts.api"
 import { omit } from "lodash"
+import { KEY_LOCAL } from "@/constants/constants"
 
 export default function Page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedVoice, setSelectedVoice] = useState<Actor>({
     id: 1,
-    name: "HN - Anh Dũng",
-    code: "anhdung",
+    name: "HN - Ngọc Huyền",
+    code: "ngochuyen",
     description: "",
     gender: "MALE",
     type: "PREMIUM",
@@ -54,35 +55,38 @@ export default function Page() {
   };
 
   const dispatch = useDispatch<any>();
-  const { tts, ttsPending, history } = VoiceHistoryAction
+  const { tts, ttsPending, history, verifyKey } = VoiceHistoryAction
   const [text, setText] = useState("")
   const [isFocused, setIsFocused] = useState(false);
 
 
   const handleTTS = (e: any) => {
     e.preventDefault();
+    
+    // Kiểm tra key đã được xác minh chưa
+    if (!isVerify) {
+      toast.error("Vui lòng xác minh key trước khi sử dụng")
+      return
+    }
+    
     const error = handleValidateText(text);
     if (error) {
       toast.error(error)
       return
     }
-    toast.success("Đã thêm vào danh sách yêu cầu...")
-    const params: tts_params_dto & { actor: Actor } = {
-      prompt: text,
-      code: selectedVoice.code || "",
-      actor: selectedVoice,
-    }
-    dispatch(ttsPending(params))
-    dispatch(tts(omit(params, 'actor')))
+    // dispatch(ttsPending(params))
+    dispatch(tts({
+      content: text
+    }))
   }
 
   const handleValidateText = (value: string): string | null => {
 
     if (!value || value.trim() === '') {
-      return "Vui lòng nhập nội dung nội dung";
+      return "Vui lòng nhập nội dung";
     }
-    if (value.length < 40) {
-      return "Nội dung phải có ít nhất 40 ký tự";
+    if (value.length < 10) {
+      return "Nội dung phải có ít nhất 10 ký tự";
     }
     if (value.length > 50000) {
       return "Nội dung không được vượt quá 50000 ký tự";
@@ -90,14 +94,45 @@ export default function Page() {
     return null;
   }
   const [search, setSearch] = useState("")
-  const handleSearch = (e: any) => {
-    setSearch(e.target.value)
-    dispatch(history({
-      page: 1,
-      limit: 5,
-      search: e.target.value
-    }))
+  // const handleSearch = (e: any) => {
+  //   setSearch(e.target.value)
+  //   dispatch(history({
+  //     page: 1,
+  //     key: key
+  //   }))
+  // }
+  const [key, setKey] = useState("")
 
+  useEffect(() => {
+    const local_key = localStorage.getItem(KEY_LOCAL)
+    if (local_key != null) {
+      setKey(local_key)
+    }
+
+  }, [])
+
+  const [isVerify, setIsVerify] = useState(false)
+  const handleVerifyKey = async (e: any) => {
+    if(key.trim() === "") {
+      toast.error("Vui lòng nhập key")
+      return
+    }
+    // call api verify key
+    try {
+      const res = await dispatch(verifyKey({
+        key: key
+      })).unwrap()
+      
+      // Nếu xác minh thành công, set isVerify = true
+      if (res) {
+        setIsVerify(true)
+        console.log("Xác minh key thành công:", res)
+      }
+    } catch (error) {
+      // Nếu xác minh thất bại, set isVerify = false
+      setIsVerify(false)
+      console.log("Xác minh key thất bại:", error)
+    }
   }
   return (
     <Layout>
@@ -113,7 +148,7 @@ export default function Page() {
                     onClick={onOpen}
                   >
                     <Avatar
-                      src={selectedVoice.avatar}
+                      src={'/images/av1.jpg'}
                       size="sm"
                       className="border-2 border-primary group-hover:scale-110 transition-transform"
                     />
@@ -139,6 +174,33 @@ export default function Page() {
                     </Button>
                     <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">wav</Button>
                     <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">320 kbps</Button>
+                    <Input 
+                      value={key} 
+                      onChange={(e) => setKey(e.target.value)} 
+                      className="w-76" 
+                      placeholder="Nhập key"
+                      color={isVerify ? "success" : "default"}
+                    />
+                    <Button 
+                      className={`shadow-sm hover:shadow transition-shadow ${
+                        isVerify 
+                          ? 'bg-green-600 text-white' 
+                          : 'bg-blue-600 text-white'
+                      }`} 
+                      onClick={handleVerifyKey}
+                    >
+                      {isVerify ? '✓ Đã xác minh' : 'Xác minh key'}
+                    </Button>
+
+                    {/* button href to https://www.facebook.com/profile.php?id=61578970415613 */}
+                    <a 
+                      className="shadow-sm hover:shadow transition-shadow bg-warning text-white p-2 rounded-lg"
+                      target="_blank"
+                      href="https://www.facebook.com/profile.php?id=61578970415613"
+                    >
+                      Liên hệ hỗ trợ
+                    </a>
+
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -156,7 +218,8 @@ export default function Page() {
               <div className="mb-6">
                 <Textarea
                   placeholder="Nhập hoặc copy và dán văn bản vào đây để chuyển thành giọng nói..."
-                  minRows={8}
+                  minRows={15}
+                  maxRows={20}
                   validate={(value) => {
                     if (!isFocused) return null;
                     return handleValidateText(value);
@@ -168,11 +231,12 @@ export default function Page() {
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   classNames={{
-                    input: "focus:border-primary",
+                    input: "focus:border-primary resize-y",
                     innerWrapper: "focus-within:border-primary",
                     inputWrapper: "hover:border-primary-300 focus-within:border-primary"
                   }}
                   className="w-full mb-1"
+                  style={{ resize: 'vertical' }}
                 />
                 <div className="flex justify-end">
                   <span className={`text-sm ${text.length > 50000 ? 'text-danger' : 'text-default-400'}`}>
@@ -202,7 +266,7 @@ export default function Page() {
                 Danh sách yêu cầu
               </Button>
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2 w-full lg:w-auto">
-                <Input
+                {/* <Input
                   placeholder="Tìm kiếm theo nội dung"
                   startContent={<Search className="text-default-400 w-4 h-4" />}
                   size="sm"
@@ -215,7 +279,7 @@ export default function Page() {
                     inputWrapper: "hover:border-primary-300 focus-within:border-primary"
                   }}
                   onChange={handleSearch}
-                />
+                /> */}
                 <Button variant="flat" className="bg-white shadow-sm hover:shadow" endContent={<ChevronDown className="w-4 h-4" />}>
                   Trạng thái
                 </Button>
@@ -224,6 +288,27 @@ export default function Page() {
                 </Button>
               </div>
             </div>
+            
+            {/* Download Warning */}
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="flex-shrink-0 mt-0.5">
+                  <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3.586l-.293-.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 10.586V6z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-sm font-medium text-amber-800 mb-1">
+                    Lưu ý quan trọng
+                  </h4>
+                  <p className="text-sm text-amber-700 leading-relaxed">
+                    <strong>Link tải xuống sẽ tự động hết hạn sau vài phút.</strong> 
+                    Vui lòng tải xuống ngay khi chuyển đổi xong để tránh mất file audio.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             <div className="flex flex-col gap-4 bg-white h-[350px] -mx-3 p-2">
               <div className="overflow-x-auto">
                 <div className="min-w-[800px]">

@@ -51,7 +51,7 @@ const plans = [
   },
   {
     name: "Đặc biệt",
-    price: "250.000",
+    price: "320.000",
     period: "unlimited",
     type: 4,
     features: [

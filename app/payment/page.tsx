@@ -82,7 +82,7 @@ const data_price = [
     },
     {
         type: 4,
-        price: 250000,
+        price: 320000,
         name: "Đặc biệt",
     }
 ]

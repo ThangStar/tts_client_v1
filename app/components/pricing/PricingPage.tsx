@@ -36,11 +36,11 @@ const plans = [
   },
   {
     name: "Chuyên nghiệp",
-    price: "350.000",
+    price: "170.000",
     period: "unlimited",
     type: 3,
     features: [
-      { text: "Số lượng ký tự 2.000.000", enabled: true },
+      { text: "Số lượng ký tự 1.000.000", enabled: true },
       { text: "Không giới hạn thời gian sử dụng", enabled: true },
       { text: "Tối đa 50.000 chuyển đổi mỗi lần", enabled: true },
       { text: "Không giới hạn số lần chuyển trong ngày", enabled: true },
@@ -51,11 +51,11 @@ const plans = [
   },
   {
     name: "Đặc biệt",
-    price: "750.000",
+    price: "250.000",
     period: "unlimited",
     type: 4,
     features: [
-      { text: "Số lượng ký tự 5.000.000", enabled: true },
+      { text: "Số lượng ký tự 2.000.000", enabled: true },
       { text: "Không giới hạn thời gian sử dụng", enabled: true },
       { text: "Tối đa 50.000 chuyển đổi mỗi lần", enabled: true },
       { text: "Không giới hạn số lần chuyển trong ngày", enabled: true },

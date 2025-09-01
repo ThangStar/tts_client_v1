@@ -77,12 +77,12 @@ const data_price = [
     },
     {
         type: 3,
-        price: 350000,
+        price: 170000,
         name: "Chuyên nghiệp",
     },
     {
         type: 4,
-        price: 750000,
+        price: 250000,
         name: "Đặc biệt",
     }
 ]

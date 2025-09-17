@@ -85,8 +85,8 @@ export default function Page() {
     if (value.length < 10) {
       return "Nội dung phải có ít nhất 10 ký tự";
     }
-    if (value.length > 50000) {
-      return "Nội dung không được vượt quá 50000 ký tự";
+    if (value.length > 3000) {
+      return "Nội dung không được vượt quá 3000 ký tự";
     }
     return null;
   }
@@ -229,8 +229,8 @@ export default function Page() {
                   style={{ resize: 'vertical' }}
                 />
                 <div className="flex justify-end">
-                  <span className={`text-sm ${text.length > 50000 ? 'text-danger' : 'text-default-400'}`}>
-                    {text.length}/50000
+                  <span className={`text-sm ${text.length > 3000 ? 'text-danger' : 'text-default-400'}`}>
+                    {text.length}/3000
                   </span>
                 </div>
               </div>

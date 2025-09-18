@@ -10,10 +10,15 @@ import {
   Textarea,
   useDisclosure,
   Checkbox,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react"
 import { Clock, ChevronDown } from 'lucide-react'
 import React, { useEffect, useState } from "react"
 import VoiceSelectionModal from '../components/VoiceSelectionModal'
+import PunctuationSettingsModal from '../components/PunctuationSettingsModal'
 import { useDispatch } from "react-redux"
 import VoiceHistoryList from "../components/VoiceHistoryList"
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice"
@@ -23,27 +28,41 @@ import { KEY_LOCAL } from "@/constants/constants"
 
 export default function Page() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isPunctuationOpen, onOpen: onPunctuationOpen, onClose: onPunctuationClose } = useDisclosure();
+  
+  // Danh sách tùy chọn tốc độ phát
+  const speedOptions = [
+    { value: 0.25, label: "0.25x", description: "Rất chậm" },
+    { value: 0.5, label: "0.5x", description: "Chậm" },
+    { value: 0.75, label: "0.75x", description: "Hơi chậm" },
+    { value: 1, label: "1x", description: "Bình thường" },
+    { value: 1.05, label: "1.05x", description: "Hơi nhanh" },
+    { value: 1.1, label: "1.1x", description: "Nhanh" },
+    { value: 1.15, label: "1.15x", description: "Rất nhanh" }
+  ];
+  
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [selectedVoice, setSelectedVoice] = useState<Actor>({
     id: 1,
     name: "HN - Ngọc Huyền",
-    code: "ngochuyen",
-    description: "",
-    gender: "MALE",
+    code: "hn_female_ngochuyen_full_48k-fhg",
+    gender: "female",
     type: "PREMIUM",
+    description: "Giọng nữ nổi bật nhất của Vbee, chất giọng truyền cảm, rõ ràng, phù hợp với các nội dung review phim, giải trí, quảng cáo.",
+    avatar: "https://vbee-studio-data.s3.ap-southeast-1.amazonaws.com/images/voices/round/ngoc-huyen.png",
     is_premium: true,
-    avatar: "https://i.pravatar.cc/150?img=0",
-    sample_audio: "/public/voice/anhdung.wav",
-    category: {
-      id: 3,
-      name: "Postcast",
-      code: "POSTCAST",
-    },
+    sample_audio: "https://vbee.s3.ap-southeast-1.amazonaws.com/audios/demo/vbee/hn_female_ngochuyen_fast_news_48k-thg.mp3",
     language: {
       id: 1,
       name: "Tiếng Việt",
-      code: "VN",
+      code: "vi-VN"
+    },
+    category: {
+      id: 1,
+      name: "Review",
+      code: "review"
     }
-  });
+  },);
 
   // const voiceHistories = useSelector((state: any) => state.voiceHistories.value.voiceHistories);
 
@@ -60,20 +79,29 @@ export default function Page() {
 
   const handleTTS = (e: any) => {
     e.preventDefault();
-    
+
     // Kiểm tra key đã được xác minh chưa
     if (!isVerify) {
       toast.error("Vui lòng xác minh key trước khi sử dụng")
       return
     }
-    
+
     const error = handleValidateText(text);
     if (error) {
       toast.error(error)
       return
     }
+
+    console.log("text", text);
+    console.log("playbackSpeed", playbackSpeed);
+    console.log("selectedVoice", selectedVoice.code);
+    console.log("punctuation", getPunctuationString(punctuationSettings));
+    
     dispatch(tts({
-      content: text
+      content: text, 
+      speech: playbackSpeed,
+      voice: selectedVoice.code || "hn_female_ngochuyen_full_48k-fhg",
+      punctuation: getPunctuationString(punctuationSettings)
     }))
   }
 
@@ -92,6 +120,12 @@ export default function Page() {
   }
 
   const [key, setKey] = useState("")
+  const [punctuationSettings, setPunctuationSettings] = useState({
+    period: 0.45,
+    semicolon: 0.3,
+    comma: 0.25,
+    paragraph: 0.6
+  })
 
   useEffect(() => {
     const local_key = localStorage.getItem(KEY_LOCAL)
@@ -103,7 +137,7 @@ export default function Page() {
 
   const [isVerify, setIsVerify] = useState(false)
   const handleVerifyKey = async () => {
-    if(key.trim() === "") {
+    if (key.trim() === "") {
       toast.error("Vui lòng nhập key")
       return
     }
@@ -112,7 +146,7 @@ export default function Page() {
       const res = await dispatch(verifyKey({
         key: key
       })).unwrap()
-      
+
       // Nếu xác minh thành công, set isVerify = true
       if (res) {
         setIsVerify(true)
@@ -124,6 +158,22 @@ export default function Page() {
       console.log("Xác minh key thất bại:", error)
     }
   }
+
+  // Function để tạo chuỗi punctuation theo format yêu cầu
+  const getPunctuationString = (settings: any) => {
+    return `${Math.round(settings.period * 100) / 100},${Math.round(settings.comma * 100) / 100},${Math.round(settings.semicolon * 100) / 100},${Math.round(settings.paragraph * 100) / 100}`
+  }
+
+  const handlePunctuationSave = (settings: any) => {
+    setPunctuationSettings(settings)
+    
+    // Format punctuation settings thành chuỗi theo thứ tự: dấu chấm, phẩy, chấm phẩy, giữa các đoạn
+    const punctuationString = getPunctuationString(settings)
+    console.log("Punctuation settings:", punctuationString)
+    
+    toast.success("Đã lưu thiết lập dấu câu")
+  }
+
   return (
     <Layout>
       <div className="flex-1 p-1 lg:p-3 bg-gradient-to-br from-blue-50/50 to-primary/5">
@@ -138,52 +188,69 @@ export default function Page() {
                     onClick={onOpen}
                   >
                     <Avatar
-                      src={'/images/av1.jpg'}
+                      src={selectedVoice.avatar}
                       size="sm"
                       className="border-2 border-primary group-hover:scale-110 transition-transform"
                     />
                     <span className="font-medium">{selectedVoice.name}</span>
-                    <Button
-                      endContent={<ChevronDown className="w-4 h-4" />}
-                      variant="light"
-                      size="sm"
-                      className="font-medium"
-                    >
-                      1x
-                    </Button>
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <Button
+                          endContent={<ChevronDown className="w-4 h-4" />}
+                          variant="light"
+                          size="sm"
+                          className="font-medium"
+                        >
+                          {speedOptions.find(option => option.value === playbackSpeed)?.label || "1x"}
+                        </Button>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        aria-label="Tốc độ phát"
+                        onAction={(key) => setPlaybackSpeed(parseFloat(key as string))}
+                        selectedKeys={[playbackSpeed.toString()]}
+                      >
+                        {speedOptions.map((option) => (
+                          <DropdownItem key={option.value.toString()}>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{option.label}</span>
+                              <span className="text-xs text-default-500">{option.description}</span>
+                            </div>
+                          </DropdownItem>
+                        ))}
+                      </DropdownMenu>
+                    </Dropdown>
                   </div>
                   <div className="hidden lg:block h-5 w-[1px] bg-default-200" />
                   <div className="flex flex-wrap gap-2">
                     <Button
-                      endContent={<ChevronDown className="w-4 h-4" />}
+                      onClick={onPunctuationOpen}
                       variant="flat"
                       size="sm"
                       className="bg-white shadow-sm hover:shadow transition-shadow"
                     >
-                      Tải tệp lên
+                      Thiết lập dấu câu
                     </Button>
                     <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">wav</Button>
                     <Button variant="flat" size="sm" className="bg-white shadow-sm hover:shadow">320 kbps</Button>
-                    <Input 
-                      value={key} 
-                      onChange={(e) => setKey(e.target.value)} 
-                      className="w-76" 
+                    <Input
+                      value={key}
+                      onChange={(e) => setKey(e.target.value)}
+                      className="w-76"
                       placeholder="Nhập key"
                       color={isVerify ? "success" : "default"}
                     />
-                    <Button 
-                      className={`shadow-sm hover:shadow transition-shadow ${
-                        isVerify 
-                          ? 'bg-green-600 text-white' 
+                    <Button
+                      className={`shadow-sm hover:shadow transition-shadow ${isVerify
+                          ? 'bg-green-600 text-white'
                           : 'bg-blue-600 text-white'
-                      }`} 
+                        }`}
                       onClick={handleVerifyKey}
                     >
                       {isVerify ? '✓ Đã xác minh' : 'Xác minh key'}
                     </Button>
 
                     {/* button href to https://www.facebook.com/profile.php?id=61578970415613 */}
-                    <a 
+                    <a
                       className="shadow-sm hover:shadow transition-shadow bg-warning text-white p-2 rounded-lg"
                       target="_blank"
                       href="https://www.facebook.com/profile.php?id=61578970415613"
@@ -264,7 +331,7 @@ export default function Page() {
                 </Button>
               </div>
             </div>
-            
+
             {/* Download Warning */}
             <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <div className="flex items-start gap-2">
@@ -278,13 +345,13 @@ export default function Page() {
                     Lưu ý quan trọng
                   </h4>
                   <p className="text-sm text-amber-700 leading-relaxed">
-                    <strong>Link tải xuống sẽ tự động hết hạn sau vài phút.</strong> 
+                    <strong>Link tải xuống sẽ tự động hết hạn sau vài phút.</strong>
                     Vui lòng tải xuống ngay khi chuyển đổi xong để tránh mất file audio.
                   </p>
                 </div>
               </div>
             </div>
-            
+
             <div className="flex flex-col gap-4 bg-white h-[350px] -mx-3 p-2">
               <div className="overflow-x-auto">
                 <div className="min-w-[800px]">
@@ -298,6 +365,13 @@ export default function Page() {
               isOpen={isOpen}
               onClose={onClose}
               onVoiceSelect={handleVoiceSelect}
+            />
+            
+            {/* Punctuation Settings Modal */}
+            <PunctuationSettingsModal
+              isOpen={isPunctuationOpen}
+              onClose={onPunctuationClose}
+              onSave={handlePunctuationSave}
             />
           </CardBody>
         </Card>

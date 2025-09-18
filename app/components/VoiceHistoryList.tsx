@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CheckCircle2, Clock, Download,  Play, Pause } from 'lucide-react';
 import { history_list_response_dto, tts_dto} from "../api/tts.api";
 import { VoiceHistoryAction } from "../redux/slices/voiceHistories.slice";
+import { HARDCODED_VOICES } from "@/constants/constants";
 
 export default function VoiceHistoryList() {
     const voiceHistories: history_list_response_dto = useSelector((state: { voiceHistories: any }) => state.voiceHistories.value.voiceHistories);
@@ -141,7 +142,7 @@ export default function VoiceHistoryList() {
             case "voice":
                 return (
                     <div className="flex items-center gap-3">
-                        <p className="text-bold text-sm">HN - Ngọc Huyền</p>
+                        <p className="text-bold text-sm">{HARDCODED_VOICES.find(voice => voice.code === item.voice)?.name || "HN - Ngọc Huyền"}</p>
                     </div>
                 );
             case "metadata":

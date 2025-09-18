@@ -2,6 +2,9 @@ import http from "../http/http"
 import { Actor, } from "../types/actor.type"
 export type tts_params_dto = {
     content: string,
+    voice: string,
+    speech: number,
+    punctuation?: string
 }
 
 export type tts_response_dto = {
@@ -54,7 +57,9 @@ export type tts_dto = {
     status?: string,
     text_char_count?: number,
     updatedAt?: string,
-    url?: string
+    url?: string,
+    voice?: string,
+    speech?: number
 }
 export type history_list_response_dto = {
     items?: tts_dto[],

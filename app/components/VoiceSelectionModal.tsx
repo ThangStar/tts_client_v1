@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useMemo, useEffect } from "react"
 import {
   Modal,
   ModalContent,
@@ -16,12 +16,9 @@ import {
   Chip
 } from "@nextui-org/react"
 import { Search, Settings, Filter, Play, Pause } from 'lucide-react'
-import { useSelector } from "react-redux"
 import { Actor, ActorGender, ActorLanguage, ActorType } from "../types/actor.type"
-import { voice_list_response_dto } from "../api/tts.api"
-
-// Định nghĩa types
-
+import { HARDCODED_VOICES } from "@/constants/constants"
+// Danh sách giọng đọc cố định
 
 type FilterState = {
   gender: string[]
@@ -45,34 +42,73 @@ export default function VoiceSelectionModal({
   const [searchQuery, setSearchQuery] = useState("")
   const [page, setPage] = useState(1)
   const [filters, setFilters] = useState<FilterState>({
-    gender: [ActorGender.FEMALE, ActorGender.MALE],
+    gender: ["FEMALE", "MALE"],
     type: [ActorType.STANDARD, ActorType.PREMIUM],
-    languageCode: [ActorLanguage.VI, ActorLanguage.EN],
+    languageCode: ["vi-VN"],
     category_code: ""
   })
   const [showFilters, setShowFilters] = useState(false)
   const [playingId, setPlayingId] = useState<number | null>(null)
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null)
 
-  const { actors: { items, meta } }: { actors: voice_list_response_dto } = useSelector((state: any) => state.actor.value)
-  // useEffect(() => {
-  //   dispatch(actorAction.listActor({
-  //     search: searchQuery,
-  //     limit: 5,
-  //     page: page,
-  //     category_code: filters.category_code,
-  //     language_code: filters.languageCode.join(','),
-  //     type: convertTypeToNumber(filters.type),
-  //     gender: convertGenderToNumber(filters.gender),
-  //   }))
-  // }, [searchQuery, page, filters, dispatch, actorAction])
+  // Lọc và tìm kiếm dữ liệu từ danh sách cố định
+  const filteredVoices = useMemo(() => {
+    let filtered = HARDCODED_VOICES
+
+    // Lọc theo tìm kiếm
+    if (searchQuery) {
+      filtered = filtered.filter(voice => 
+        voice.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        voice.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        voice.category?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+
+    // Lọc theo giới tính
+    if (filters.gender.length > 0) {
+      filtered = filtered.filter(voice => 
+        filters.gender.includes(voice.gender?.toUpperCase() || '')
+      )
+    }
+
+    // Lọc theo loại giọng
+    if (filters.type.length > 0) {
+      filtered = filtered.filter(voice => 
+        filters.type.includes(voice.type || '')
+      )
+    }
+
+    // Lọc theo ngôn ngữ
+    if (filters.languageCode.length > 0) {
+      filtered = filtered.filter(voice => 
+        filters.languageCode.includes(voice.language?.code || '')
+      )
+    }
+
+    // Lọc theo danh mục
+    if (filters.category_code) {
+      filtered = filtered.filter(voice => 
+        voice.category?.code === filters.category_code
+      )
+    }
+
+    return filtered
+  }, [searchQuery, filters])
+
+  // Phân trang
+  const itemsPerPage = 5
+  const totalPages = Math.ceil(filteredVoices.length / itemsPerPage)
+  const paginatedVoices = filteredVoices.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  )
 
   // Reset filters
   const resetFilters = () => {
     setFilters({
-      gender: [ActorGender.FEMALE, ActorGender.MALE],
+      gender: ["FEMALE", "MALE"],
       type: [ActorType.STANDARD, ActorType.PREMIUM],
-      languageCode: [ActorLanguage.VI, ActorLanguage.EN],
+      languageCode: ["vi-VN"],
       category_code: ""
     })
     setSearchQuery("")
@@ -120,13 +156,22 @@ export default function VoiceSelectionModal({
     }
 
     if (playingId !== actor.id) {
-      const newAudio = new Audio(`${(process.env.NEXT_PUBLIC_API_URL || '') + actor?.sample_audio}`);
+      const newAudio = new Audio(actor?.sample_audio || '');
       newAudio.play();
       newAudio.onended = () => setPlayingId(null);
       setAudio(newAudio);
       setPlayingId(actor.id || null);
     }
   };
+
+  // Dừng audio khi đóng modal
+  useEffect(() => {
+    if (!isOpen && audio) {
+      audio.pause();
+      setAudio(null);
+      setPlayingId(null);
+    }
+  }, [isOpen, audio]);
 
   return (
     <Modal
@@ -182,8 +227,8 @@ export default function VoiceSelectionModal({
                     orientation="horizontal"
                     className="gap-3"
                   >
-                    <Checkbox value={ActorGender.FEMALE}>Nữ</Checkbox>
-                    <Checkbox value={ActorGender.MALE}>Nam</Checkbox>
+                    <Checkbox value="FEMALE">Nữ</Checkbox>
+                    <Checkbox value="MALE">Nam</Checkbox>
                   </CheckboxGroup>
                 </div>
 
@@ -208,19 +253,19 @@ export default function VoiceSelectionModal({
                     orientation="horizontal"
                     className="gap-3"
                   >
-                    <Checkbox value={ActorLanguage.VI}>Tiếng Việt</Checkbox>
+                    <Checkbox value="vi-VN">Tiếng Việt</Checkbox>
                   </CheckboxGroup>
                 </div>
               </div>
             </div>
 
             <div className="flex-1 space-y-2">
-              {items.length === 0 ? (
+              {paginatedVoices.length === 0 ? (
                 <div className="text-center py-8 text-default-500">
                   Không tìm thấy giọng đọc phù hợp
                 </div>
               ) : (
-                items.map((actor: Actor) => (
+                paginatedVoices.map((actor: Actor) => (
                   <div
                     key={actor.id}
                     className="p-4 border rounded-lg hover:bg-default-100 cursor-pointer transition-colors"
@@ -266,7 +311,7 @@ export default function VoiceSelectionModal({
         </ModalBody>
         <ModalFooter className="justify-center">
           <Pagination
-            total={meta.totalPages}
+            total={totalPages}
             page={page}
             onChange={setPage}
             showControls

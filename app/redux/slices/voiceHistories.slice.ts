@@ -138,7 +138,10 @@ const action = {
                     // Emit sau khi đã kết nối
                     socketManager.emit(SocketManager.EVENTS.ENQUEUE_TTS, {
                         key: key,
-                        content: voice.content
+                        content: voice.content,
+                        speech: voice.speech,
+                        voice: voice.voice,
+                        punctuation: voice.punctuation
                     });
 
                     // Xóa listener này để tránh duplicate
@@ -158,7 +161,10 @@ const action = {
 
                 socketManager.emit(SocketManager.EVENTS.ENQUEUE_TTS, {
                     key: key,
-                    content: voice.content
+                    content: voice.content,
+                    speech: voice.speech,
+                    voice: voice.voice,
+                    punctuation: voice.punctuation
                 });
             }
         }

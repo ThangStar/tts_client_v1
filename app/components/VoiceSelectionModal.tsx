@@ -16,7 +16,7 @@ import {
   Chip
 } from "@nextui-org/react"
 import { Search, Settings, Filter, Play, Pause } from 'lucide-react'
-import { Actor, ActorGender, ActorLanguage, ActorType } from "../types/actor.type"
+import { Actor, ActorType } from "../types/actor.type"
 import { HARDCODED_VOICES } from "@/constants/constants"
 // Danh sách giọng đọc cố định
 
